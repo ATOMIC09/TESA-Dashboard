@@ -1,0 +1,15 @@
+FROM oven/bun:alpine
+
+WORKDIR /app
+
+# คัดลอก ไฟล์โค้ด และ package
+COPY . .
+
+
+RUN bun install  
+
+
+# Expose the port on which the app will run
+EXPOSE 8080
+
+CMD [ "bun", "./index.ts" ]

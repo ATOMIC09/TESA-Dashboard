@@ -13,7 +13,7 @@ import model from "./controller/model"
 const app = express()
 const port = process.env.port
 const folderpath = ["./static/sound","./static/model"]
-const topics = ["model/ticker"]
+const topics = ["model/ticker","sound/ticker "]
 
 client.on("connect",()=>{
     console.log
