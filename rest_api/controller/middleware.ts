@@ -6,9 +6,7 @@ let lines: string[];
 
 try {
     const data = fs.readFileSync('api_key.txt', 'utf8');
-    console.log(data);
     lines = data.split('\r\n')
-    console.log('Lines:', lines);
 } catch (err) {
     console.error('Error reading file:', err);
 }

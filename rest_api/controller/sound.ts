@@ -24,6 +24,11 @@ router.post("/", validateAPIKey, upload.single("file"), async (req: express.Requ
         })
     }
     const { deviceId, timeStamp } = req.body
+    if (!(req.file && req.file.fieldname && req.file.originalname)) {
+        res.status(401).send({
+            error: "Invalid request"
+        })
+      }
     const sound = req.file as Express.Multer.File
 
     const uuid = randomUUID();
