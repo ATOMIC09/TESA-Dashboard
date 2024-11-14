@@ -1,4 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 
-const app =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+const app = express()
+
+app.listen()
