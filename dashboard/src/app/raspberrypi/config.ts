@@ -1,2 +1,3 @@
-exports.NEXT_PUBLIC_BACKENDSERVER = process.env.NEXT_PUBLIC_BACKENDSERVER || 'http://localhost:8080';
-// exports.NEXT_PUBLIC_BACKENDSERVER = process.env.NEXT_PUBLIC_BACKENDSERVER || 'https://pvhlxgc5-8080.asse.devtunnels.ms';
+export const NEXT_PUBLIC_MQTTWEBSOCKET = process.env.NEXT_PUBLIC_MQTTWEBSOCKET;
+export const NEXT_PUBLIC_MQTT_USERNAME = process.env.NEXT_PUBLIC_MQTT_USERNAME;
+export const NEXT_PUBLIC_MQTT_PASSWORD = process.env.NEXT_PUBLIC_MQTT_PASSWORD;

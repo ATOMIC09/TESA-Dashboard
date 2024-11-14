@@ -8,12 +8,13 @@ import sound from "./controller/sound"
 import sounds from "./controller/sounds"
 import client from './controller/mqtt';
 import model from "./controller/model"
+import database from './config/db';
 
 
 const app = express()
 const port = process.env.port
 const folderpath = ["./static/sound","./static/model"]
-const topics = ["model/ticker","sound/ticker "]
+const topics = ["model/ticker","sound/ticker","report/"]
 
 client.on("connect",()=>{
     console.log
@@ -21,7 +22,6 @@ client.on("connect",()=>{
     for (const topic of topics) {
         client.subscribe(topic,(error)=>{
             if(!error){
-                client.publish(topic,`YAY im restapi with mqtt`)
                 console.log(`Subcribe to topic ${topic}`)
             }
             else{
@@ -32,6 +32,18 @@ client.on("connect",()=>{
       }
 })
 
+client.on('message', async (topic,message)=>{
+    if(topic == "report/"){
+        const col = database.collection('report');
+        try {
+            console.log(topic);
+            const data = await col.insertOne(JSON.parse(message.toString()))
+        }
+        catch (error) {
+            console.log(`${error}`);
+        }
+    }
+})
 
 
 app.use(cors())
