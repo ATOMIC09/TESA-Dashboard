@@ -1,4 +1,4 @@
-import { Home } from "lucide-react"
+import { LayoutDashboard, Grape } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 
 import {
@@ -16,10 +16,15 @@ import {
   
   const items: SidebarItem[] = [
     {
-      title: "หน้าหลัก",
-      icon: Home,
+      title: "Dashboard",
+      icon: LayoutDashboard,
       url: "/",
     },
+    {
+      title: "Raspberry Pi",
+      icon: Grape,
+      url: "/raspberrypi",
+    }
   ]
 
   interface SidebarItem {
@@ -33,7 +38,7 @@ import {
       <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="font-LINESeedSansTH_W_Bd text-2xl">เมนู</SidebarGroupLabel>
+          <SidebarGroupLabel className="font-LINESeedSansTH_W_Bd text-2xl">Menu</SidebarGroupLabel>
           <Separator className="my-2"/>
           <SidebarGroupContent>
             <SidebarMenu className="font-LINESeedSansTH_W_Rg">
