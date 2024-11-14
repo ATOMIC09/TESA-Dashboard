@@ -38,5 +38,5 @@ for (const i of folderpath) {
     }
 }
 app.listen(port, () => {
-    console.log(`sever listening on port ${port}`);
+    logger.info(`sever listening on port ${port}`);
 })

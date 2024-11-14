@@ -8,8 +8,6 @@ const router = express.Router()
 
 router.get("/",validateAPIKey,async (req : express.Request , res : express.Response)=>{
     const {deviceId = null} = req.query
-    console.log(!(deviceId instanceof String ));
-
     if (typeof deviceId !== 'string' && deviceId !== null ){
         res.status(400).send({
             error: "invalid request"
