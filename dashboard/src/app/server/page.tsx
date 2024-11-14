@@ -8,7 +8,6 @@ import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/server/config";
 export default function Server() {
     const [sounds, setSounds] = useState([]);
     const [apiKey, setApiKey] = useState('');
-    // const [isRecording, setIsRecording] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [deviceId, setDeviceId] = useState('');
 
