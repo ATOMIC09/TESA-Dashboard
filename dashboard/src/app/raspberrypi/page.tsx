@@ -155,6 +155,10 @@ export default function RaspberryPi() {
                 </p>
 
                 <div className="py-4 flex">
+                    <div className="flex flex-row items-center mr-4">
+                        <span className="text-lg font-bold">Status: </span>
+                        <div className={`w-4 h-4 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'} ml-2`}></div>
+                    </div>
                     <button
                         className={`${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`}
                         onClick={() => setConnectWebSocket(!connectWebSocket)}
@@ -167,17 +171,15 @@ export default function RaspberryPi() {
                     >
                         Reset
                     </button>
+                    {/* Separator */}
+                    <div className="border-2 rounded-md h-10 mx-4 border-gray-300"></div>
                     <button
-                        className={`${isRecording ? 'bg-red-900 hover:bg-red-950' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md p-2 ml-2`}
+                        className={`${isRecording ? 'bg-red-900 hover:bg-red-950' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md p-2`}
                         onClick={handleStartRecording}
                     >
                         {isRecording ? 'Stop Recording' : 'Start Recording'}
                     </button>
 
-                    <div className="flex flex-row items-center ml-4">
-                        <span className="text-lg font-bold">Status: </span>
-                        <div className={`w-4 h-4 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'} ml-2`}></div>
-                    </div>
                 </div>
 
                 <div className="flex flex-row justify-between">
