@@ -38,7 +38,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ tabledatas }) => {
 
   return (
     <Table>
-      <TableCaption>A list of recent files in the server.</TableCaption>
+      <TableCaption>รายการไฟล์ล่าสุดในเซิร์ฟเวอร์</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Device ID</TableHead>

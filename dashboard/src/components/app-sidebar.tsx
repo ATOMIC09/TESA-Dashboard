@@ -1,4 +1,4 @@
-import { LayoutDashboard, Grape } from "lucide-react"
+import { LayoutDashboard, Grape, Server } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 
 import {
@@ -16,9 +16,14 @@ import {
   
   const items: SidebarItem[] = [
     {
-      title: "Dashboard",
+      title: "Machine",
       icon: LayoutDashboard,
       url: "/",
+    },
+    {
+      title: "Server",
+      icon: Server,
+      url: "/server",
     },
     {
       title: "Raspberry Pi",
