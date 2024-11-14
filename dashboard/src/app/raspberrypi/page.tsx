@@ -120,12 +120,12 @@ export default function RaspberryPi() {
             </div>
             
             <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
-                ไฟล์ที่บันทึกล่าสุด
+                ไฟล์เสียงที่มีอยู่ในเซิร์ฟเวอร์
                 <TableComponent tabledatas={sounds} />
             </div>
 
             <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
-                อัปโหลดไฟล์เสียงไปยัง Raspberry Pi
+                อัปโหลดไฟล์เสียงไปยังเซิร์ฟเวอร์
                 <div className="flex flex-col">
                     <input
                         type="text"
