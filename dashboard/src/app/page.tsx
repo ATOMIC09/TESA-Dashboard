@@ -24,6 +24,7 @@ export default function Home() {
   const [pressure, setPressure] = useState<number[]>([]);
   const [force, setForce] = useState<number[]>([]);
   const [punchPosition, setPunchPosition] = useState<number[]>([]);
+  const [reset, setReset] = useState<boolean>(false);
 
   // Filters with datetime strings
   const [startSample, setStartSample] = useState<string>("14/11/2567 00:00:00");
@@ -38,7 +39,7 @@ export default function Home() {
       minute: "2-digit",
       second: "2-digit",
     }));
-  }, []);
+  }, [, reset]);
 
   // Add 10 minutes to current datetime
   useEffect(() => {
@@ -84,11 +85,37 @@ export default function Home() {
           const newForce = response["Force"];
           const newPosition = response["Position of the Punch"];
 
-          setCycleCount((prev) => [...prev, newCycleCount].slice(-200));
-          setPower((prev) => [...prev, newPower].slice(-200));
-          setPressure((prev) => [...prev, newPressure].slice(-200));
-          setForce((prev) => [...prev, newForce].slice(-200));
-          setPunchPosition((prev) => [...prev, newPosition].slice(-200));
+          // setCycleCount((prev) => [...prev, newCycleCount].slice(-200));
+          // setPower((prev) => [...prev, newPower].slice(-200));
+          // setPressure((prev) => [...prev, newPressure].slice(-200));
+          // setForce((prev) => [...prev, newForce].slice(-200));
+          // setPunchPosition((prev) => [...prev, newPosition].slice(-200));
+
+          setCycleCount((prev) => {
+            const updatedCycleCount = [...prev, newCycleCount];
+            return updatedCycleCount.length > 200 ? [newCycleCount] : updatedCycleCount;
+          });
+      
+          setPower((prev) => {
+            const updatedPower = [...prev, newPower];
+            return updatedPower.length > 200 ? [newPower] : updatedPower;
+          });
+      
+          setPressure((prev) => {
+            const updatedPressure = [...prev, newPressure];
+            return updatedPressure.length > 200 ? [newPressure] : updatedPressure;
+          });
+      
+          setForce((prev) => {
+            const updatedForce = [...prev, newForce];
+            return updatedForce.length > 200 ? [newForce] : updatedForce;
+          });
+      
+          setPunchPosition((prev) => {
+            const updatedPunchPosition = [...prev, newPosition];
+            return updatedPunchPosition.length > 200 ? [newPosition] : updatedPunchPosition;
+          });
+
         } catch (error) {
           console.error('Error parsing WebSocket data:', error);
         }
@@ -244,12 +271,20 @@ export default function Home() {
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
             />
-            <button
-              className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
-              onClick={() => setConnectWebSocket(!connectWebSocket)}
-            >
-              {connectWebSocket ? 'Disconnect' : 'Connect'}
-            </button>
+            <div>
+              <button
+                className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
+                onClick={() => setConnectWebSocket(!connectWebSocket)}
+              >
+                {connectWebSocket ? 'Disconnect' : 'Connect'}
+              </button>
+              <button
+                className='mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all bg-blue-500 hover:bg-blue-600'
+                onClick={() => setReset(!reset)}
+              >
+                Reset date
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col py-4">
