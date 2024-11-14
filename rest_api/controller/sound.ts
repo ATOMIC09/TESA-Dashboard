@@ -4,7 +4,7 @@ import multer from "multer";
 import { logger } from '../config/logger'
 import { validateAPIKey } from './middleware'
 import { renameSync } from 'fs'
-import { file } from 'bun';
+
 import path from 'path';
 import { randomUUID } from 'crypto';
 
@@ -17,7 +17,7 @@ const upload = multer({
     })
 })
 
-router.post("/", validateAPIKey, upload.single("file"), (req: express.Request, res: express.Response) => {
+router.post("/", validateAPIKey, upload.single("file"), async (req: express.Request, res: express.Response) => {
     if (req.body instanceof Array) {
         res.status(401).send({
             error: "Invalid request"
@@ -43,7 +43,7 @@ router.post("/", validateAPIKey, upload.single("file"), (req: express.Request, r
     const col = database.collection('sound')
 
     try {
-        const data = col.insertOne(sounddata)
+        const data = await col.insertOne(sounddata)
         res.status(201).send({ message: "OK", ids: data })
     }
     catch (error) {

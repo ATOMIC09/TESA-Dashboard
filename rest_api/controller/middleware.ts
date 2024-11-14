@@ -15,7 +15,6 @@ try {
 
 export const validateAPIKey = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     const authHeader = req.headers.authorization as string;
-    console.log(authHeader);
     if (!authHeader) {
         res.status(403).json({ error: 'No API Key provided' });
         return
@@ -28,7 +27,7 @@ export const validateAPIKey = (req: express.Request, res: express.Response, next
     try {
 
         if (lines.includes(token)) {
-            logger.info(`Access API Key`);
+            // logger.info(`Access API Key`);
             next();
         }
         else {

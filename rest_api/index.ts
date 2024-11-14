@@ -6,6 +6,7 @@ import 'dotenv/config'
 import { logger } from './config/logger';
 import { validateAPIKey } from './controller/middleware';
 import sound from "./controller/sound"
+import sounds from "./controller/sounds"
 
 
 const app = express()
@@ -25,6 +26,7 @@ app.get('/key',validateAPIKey, (req: express.Request, res: express.Response) => 
 })
 
 app.use('/sound',sound)
+app.use("/sounds",sounds)
 
 
 for (const i of folderpath) {
