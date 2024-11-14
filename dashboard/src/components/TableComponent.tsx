@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/raspberrypi/config";
+import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/server/config";
 
 // Define the type for tabledata data
 interface TableData {
