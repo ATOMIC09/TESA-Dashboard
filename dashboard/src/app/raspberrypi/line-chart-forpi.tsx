@@ -73,7 +73,7 @@ export const LineChartComponentForPi: React.FC<LineChartComponentProps> = ({
   };
 
   return (
-    <Card>
+    <Card className="mr-8 w-[45vw]">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

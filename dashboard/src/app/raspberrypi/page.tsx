@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { LineChartComponentForPi } from "./line-chart-forpi";
+import TableComponentForPi from "./TableComponent-forpi";
 import { NEXT_PUBLIC_MQTTWEBSOCKET, NEXT_PUBLIC_MQTT_USERNAME, NEXT_PUBLIC_MQTT_PASSWORD } from "@/app/raspberrypi/config";
 import mqtt from "mqtt";
 
@@ -102,16 +103,27 @@ export default function RaspberryPi() {
                     >
                         {connectWebSocket ? 'Disconnect' : 'Connect'}
                     </button>
+                    <button // reset button
+                        className='bg-blue-500 hover:bg-blue-600 text-white rounded-md p-2 ml-2'
+                        onClick={() => setMluData([])}
+                    >
+                        Reset
+                    </button>
                 </div>
 
-                <LineChartComponentForPi
-                    title={'Predicted'}
-                    description={'ผลการทำนายจาก Raspberry Pi'}
-                    chartData={mluData}
-                    chartConfig={mluConfig}
-                    varname={'ตำแหน่ง'}
-                    color={'#a768de'}
-                />
+                <div className="flex flex-row justify-between">
+                    <LineChartComponentForPi
+                        title={'Predicted'}
+                        description={'ผลการทำนายจาก Raspberry Pi'}
+                        chartData={mluData}
+                        chartConfig={mluConfig}
+                        varname={'ตำแหน่ง'}
+                        color={'#a768de'}
+                    />
+                    <div className='border-2 rounded-lg shadow-sm min-w-[40em]'>
+                        <TableComponentForPi tabledatas={mluData}/>
+                    </div>
+                </div>    
             </main>
         </div>
     );
