@@ -10,6 +10,8 @@ export default function RaspberryPi() {
     const [apiKey, setApiKey] = useState('');
     const [connectBackend, setConnectBackend] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+    const [deviceId, setDeviceId] = useState('');
 
     const getSounds = () => {
         if (connectBackend) {
@@ -35,6 +37,61 @@ export default function RaspberryPi() {
         );
         }
     }
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = event.target.files ? event.target.files[0] : null;
+        setFile(selectedFile);
+    };
+
+    // Function to upload the file to the server
+    const handleUpload = () => {
+        if (!file) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        if (apiKey === '') {
+            alert('โปรดใส่ API Key');
+            return;
+        }
+
+        if (deviceId === '') {
+            alert('โปรดใส่ Device ID');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("deviceId", deviceId);
+        formData.append("timeStamp", new Date().toISOString());
+
+        axios.post(`${NEXT_PUBLIC_BACKENDSERVER}/sound`, formData, {
+            headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${apiKey}`
+            }
+        })
+        .then((response) => {
+            alert("File uploaded successfully!");
+            // Refresh table
+            axios.get(`${NEXT_PUBLIC_BACKENDSERVER}/sounds`, {
+                headers: {
+                    Authorization: `Bearer ${apiKey}`
+                }
+            }).then((res) => {
+                setSounds(res.data);
+
+            }).catch((err) => {
+                console.log(err);
+            }
+            );
+        })
+        .catch((error) => {
+            console.error("There was an error uploading the file:", error);
+            alert("Error uploading file.");
+        });
+    };
+    
 
     return (
         <div className="p-8 pb-20 gap-16 sm:p-20 min-h-screen">
@@ -67,9 +124,33 @@ export default function RaspberryPi() {
                 <TableComponent tabledatas={sounds} />
             </div>
 
-            <button className={`${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`} onClick={() => setIsRecording(!isRecording)}>
+            <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
+                อัปโหลดไฟล์เสียงไปยัง Raspberry Pi
+                <div className="flex flex-col">
+                    <input
+                        type="text"
+                        className="border rounded px-1 py-1"
+                        placeholder="Device ID"
+                        onChange={(e) => setDeviceId(e.target.value)}
+                    />
+                    <input
+                        type="file"
+                        className="py-4"
+                        onChange={handleFileChange}
+                    />
+                    <button
+                        className="bg-green-500 hover:bg-green-600 text-white rounded-md p-2"
+                        onClick={handleUpload}
+                        >
+                        Upload
+                    </button>
+                </div>
+            </div>
+
+
+            {/* <button className={`${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`} onClick={() => setIsRecording(!isRecording)}>
                 {isRecording ? 'Stop Recording' : 'Start Recording'}
-            </button>
+            </button> */}
 
         </main>
         </div>
