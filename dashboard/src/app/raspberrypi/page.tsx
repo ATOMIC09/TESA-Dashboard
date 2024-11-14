@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, use } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { LineChartComponentForPi } from "./line-chart-forpi";
 import TableComponentForPi from "./TableComponent-forpi";
 import { NEXT_PUBLIC_MQTTWEBSOCKET, NEXT_PUBLIC_MQTT_USERNAME, NEXT_PUBLIC_MQTT_PASSWORD } from "@/app/raspberrypi/config";
@@ -12,7 +12,8 @@ export default function RaspberryPi() {
     const [isRecording, setIsRecording] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0);
-    const [isAutoMode, setIsAutoMode] = useState(false); // Toggle for Auto/Manual
+    const [isAutoMode, setIsAutoMode] = useState(false);
+    const [logStatus, setLogStatus] = useState<string[]>([]);
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -29,7 +30,6 @@ export default function RaspberryPi() {
         password: NEXT_PUBLIC_MQTT_PASSWORD,
         protocol: 'ws',
     });
-
     const dataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -78,12 +78,13 @@ export default function RaspberryPi() {
                         setIsOnline(false);
                         console.log('Raspberry Pi is offline due to no data update');
                     }, 30 * 1000);
-                } else if (topic === 'rpi/10000000bab0b141/status') {
-                    if (data.status === 'online') {
-                        setIsOnline(true);
-                    } else {
-                        setIsOnline(false);
-                    }
+                }
+
+                if (topic === 'rpi/10000000bab0b141/status') {
+                    setLogStatus((prev) => [
+                        ...prev,
+                        `State: ${data.report_state}, File: ${data.filename || 'N/A'}, Time: ${data.timestamp}`,
+                    ]);
                 }
             });
 
@@ -245,6 +246,20 @@ export default function RaspberryPi() {
                         <TableComponentForPi tabledatas={mluData} />
                     </div>
                 </div>
+
+                <div className="mt-4 p-4 bg-gray-100 border border-gray-300 rounded-md">
+                    <span className="text-md font-semibold">Log Status:</span>
+                    <div className="text-sm text-gray-700">
+                        {logStatus.length > 0 ? (
+                            logStatus.map((log, index) => (
+                                <div key={index}>{log}</div>
+                            ))
+                        ) : (
+                            "No log updates available."
+                        )}
+                    </div>
+                </div>
+
             </main>
         </div>
     );
