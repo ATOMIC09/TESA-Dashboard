@@ -1,6 +1,0 @@
-.vscode
-*.o
-main
-*.db
-*.db-journal
-.env

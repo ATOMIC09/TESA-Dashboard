@@ -10,10 +10,14 @@
 #include <sqlite3.h>
 #include <MQTTClient.h>
 #include <cjson/cJSON.h>
+#include "codegen/lib/NeuralNgin/ExtractFeatures.h"
+#include "codegen/lib/NeuralNgin/CheckEvent.h"
+#include "codegen/lib/NeuralNgin/NeuralPredictAudio2.h"
 
 extern void* sound_processing_unit();
 extern void* ml_unit();
 extern void* ml_sender();
+extern void* sound_process_sender();
 
 typedef struct {
     void* shared_var;            // The variable to manage (generic pointer)
@@ -27,6 +31,7 @@ extern SharedData payload_data;
 extern SharedData recorder_processing_unit_data;
 extern SharedData processing_ml_unit_data;
 extern SharedData ml_sender_data;
+extern SharedData sound_process_data;
 
 extern void init_shared_data(SharedData *data, size_t size);
 extern void set_shared_var(SharedData *data, void *value, size_t size);

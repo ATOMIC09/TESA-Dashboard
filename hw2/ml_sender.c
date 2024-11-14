@@ -108,6 +108,7 @@ void* ml_sender() {
     sqlite3* db = NULL;
     MQTTClient client;
     if (init_classification_database(&db) != 0) {
+        printf("Failed to initialize SQLite database\n");
         exit(1);
     }
     if (init_mqtt(
@@ -116,6 +117,7 @@ void* ml_sender() {
         client_id,
         username,
         password) != 0) {
+        printf("Failed to initialize MQTT\n");
         exit(1);
     }
 
@@ -171,6 +173,7 @@ void* ml_sender() {
             created_at,
             classification_str,
             confidence) != 0) {
+            printf("Failed to send MQTT message\n");
             exit(1);
         }
 
