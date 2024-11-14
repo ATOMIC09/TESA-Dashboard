@@ -11,6 +11,10 @@ export default function Home() {
   const [pressure, setPressure] = useState<number[]>([]);
   const [force, setForce] = useState<number[]>([]);
   const [punchPosition, setPunchPosition] = useState<number[]>([]);
+  
+  // Sample filters
+  const [startSample, setStartSample] = useState<number>(0);
+  const [endSample, setEndSample] = useState<number>(20000);
 
   // WebSocket connection and handling
   useEffect(() => {
@@ -77,24 +81,40 @@ export default function Home() {
     };
   }, [connectWebSocket, apiKey]);
 
-  const powerChartData = power.map((_, index) => ({
+  // Function to filter data by start and end sample
+  const filterDataBySample = (data: number[], cycleData: number[]) => {
+    if (startSample === 0 && endSample === 20000) return data;
+
+    return data.filter((_, index) => {
+      return cycleData[index] >= startSample && cycleData[index] <= endSample;
+    });
+  };
+
+  // Filtered data
+  const filteredPower = filterDataBySample(power, cycleCount);
+  const filteredPressure = filterDataBySample(pressure, cycleCount);
+  const filteredForce = filterDataBySample(force, cycleCount);
+  const filteredPunchPosition = filterDataBySample(punchPosition, cycleCount);
+
+  // Prepare chart data for filtered results
+  const powerChartData = filteredPower.map((_, index) => ({
     cycleCount: cycleCount[index],
-    var1: power[index],
+    var1: filteredPower[index],
   }));
 
-  const pressureChartData = pressure.map((_, index) => ({
+  const pressureChartData = filteredPressure.map((_, index) => ({
     cycleCount: cycleCount[index],
-    var1: pressure[index],
+    var1: filteredPressure[index],
   }));
 
-  const forceChartData = force.map((_, index) => ({
+  const forceChartData = filteredForce.map((_, index) => ({
     cycleCount: cycleCount[index],
-    var1: force[index],
+    var1: filteredForce[index],
   }));
 
-  const punchPositionChartData = punchPosition.map((_, index) => ({
+  const punchPositionChartData = filteredPunchPosition.map((_, index) => ({
     cycleCount: cycleCount[index],
-    var1: punchPosition[index],
+    var1: filteredPunchPosition[index],
   }));
 
   const powerLineChartConfig = {
@@ -177,6 +197,7 @@ export default function Home() {
     },
   };
 
+  
   const numberOfSamples = cycleCount.length;
   const totalSamples = 200;
 
@@ -208,11 +229,28 @@ export default function Home() {
             {connectWebSocket ? 'Disconnect' : 'Connect'}
           </button>
         </div>
+
+        <div className="flex justify-center py-4">
+          <label className="mr-4">Start Sample:</label>
+          <input
+            type="number"
+            value={startSample}
+            onChange={(e) => setStartSample(Number(e.target.value))}
+          />
+          <label className="mx-4">End Sample:</label>
+          <input
+            type="number"
+            value={endSample}
+            onChange={(e) => setEndSample(Number(e.target.value))}
+          />
+        </div>
+
         <div>
           <p className="text-lg text-gray-500 py-2 flex justify-center">
             Number of samples: {numberOfSamples}/{totalSamples}
           </p>
         </div>
+
         <div className='gap-4 items-center justify-center flex flex-col md:w-screen w-full'>
           <div className='w-full md:w-3/4 px-8'>
             <LineChartComponent title={'Energy Consumption'} description={'การใช้พลังงานของเครื่องจักร'} chartData={powerChartData} chartConfig={powerLineChartConfig} varname={'กำลัง'} color={'#8884d8'}/>
