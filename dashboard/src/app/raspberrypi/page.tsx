@@ -8,17 +8,12 @@ import { NEXT_PUBLIC_BACKENDSERVER } from "./config";
 export default function RaspberryPi() {
     const [sounds, setSounds] = useState([]);
     const [apiKey, setApiKey] = useState('');
-    const [connectBackend, setConnectBackend] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
     const [file, setFile] = useState<File | null>(null);
     const [deviceId, setDeviceId] = useState('');
 
     const getSounds = () => {
-        if (connectBackend) {
-            setConnectBackend(!connectBackend);
-            return;
-        }
-        else if (apiKey === '') {
+        if (apiKey === '') {
             alert('โปรดใส่ API Key');
             return;
         }
@@ -29,7 +24,6 @@ export default function RaspberryPi() {
                 }
             }).then((res) => {
                 setSounds(res.data);
-                setConnectBackend(!connectBackend);
                 console.log(res.data);
             }).catch((err) => {
                 console.log(err);
@@ -112,20 +106,20 @@ export default function RaspberryPi() {
                 onChange={(e) => setApiKey(e.target.value)}
                 />
                 <button
-                    className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectBackend ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
+                    className='mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all bg-green-500 hover:bg-green-600'
                     onClick={getSounds}
                     >
-                    {connectBackend ? 'Disconnect' : 'Connect'}
+                    Fetch
                 </button>
             </div>
             
             <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
-                ไฟล์เสียงที่มีอยู่ในเซิร์ฟเวอร์
+                ไฟล์ที่มีอยู่ในเซิร์ฟเวอร์
                 <TableComponent tabledatas={sounds} />
             </div>
 
             <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
-                อัปโหลดไฟล์เสียงไปยังเซิร์ฟเวอร์
+                อัปโหลดไฟล์ไปยังเซิร์ฟเวอร์
                 <div className="flex flex-col">
                     <input
                         type="text"
