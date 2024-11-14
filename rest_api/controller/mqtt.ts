@@ -1,5 +1,4 @@
 import mqtt from "mqtt"
-import { logger } from "../config/logger";
 
 const user = process.env.user
 const password = process.env.password
