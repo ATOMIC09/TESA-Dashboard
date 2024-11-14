@@ -3,19 +3,56 @@
 import React, { useState, useEffect } from 'react';
 import { LineChartComponent } from "@/components/line-chart";
 
+// Utility function to parse Thai Buddhist calendar datetime into JavaScript Date
+const parseThaiDateTime = (thaiDateTime: string): Date => {
+  // console.log('Parsing Thai datetime:', thaiDateTime);
+  const [datePart, timePart] = thaiDateTime.split(" ");
+  const [day, month, year] = datePart.split("/").map(Number);
+  const [hours, minutes, seconds] = timePart.split(":").map(Number);
+
+  // Convert Buddhist year to Gregorian year
+  const gregorianYear = year - 543;
+
+  return new Date(gregorianYear, month - 1, day, hours, minutes, seconds);
+};
+
 export default function Home() {
   const [apiKey, setApiKey] = useState('');
   const [connectWebSocket, setConnectWebSocket] = useState(false);
-  const [cycleCount, setCycleCount] = useState<number[]>([]);
+  const [cycleCount, setCycleCount] = useState<string[]>([]);
   const [power, setPower] = useState<number[]>([]);
   const [pressure, setPressure] = useState<number[]>([]);
   const [force, setForce] = useState<number[]>([]);
   const [punchPosition, setPunchPosition] = useState<number[]>([]);
-  
-  // Sample filters
-  const [startSample, setStartSample] = useState<number>(0);
-  const [endSample, setEndSample] = useState<number>(20000);
 
+  // Filters with datetime strings
+  const [startSample, setStartSample] = useState<string>("14/11/2567 00:00:00");
+  const [endSample, setEndSample] = useState<string>("14/11/2567 23:59:59");
+
+  useEffect(() => {
+    setStartSample(new Date().toLocaleString("th-TH", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }));
+  }, []);
+
+  // Add 10 minutes to current datetime
+  useEffect(() => {
+    setEndSample(new Date(parseThaiDateTime(startSample).getTime() + 600000).toLocaleString("th-TH", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    }));
+  }, [startSample]);
+
+  
   // WebSocket connection and handling
   useEffect(() => {
     let ws: WebSocket | null = null;
@@ -31,41 +68,27 @@ export default function Home() {
       ws.onmessage = (event) => {
         try {
           const response = JSON.parse(event.data);
-          console.log('WebSocket data received:', response); // Log raw response
+          console.log('WebSocket data received:', response);
 
-          // Extract data voltage
-          const newCycleCount = response["Cycle Count"];
+          const newCycleCount = new Date().toLocaleString("th-TH", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+
           const newPower = response["Energy Consumption"]["Power"];
           const newPressure = response["Pressure"];
           const newForce = response["Force"];
           const newPosition = response["Position of the Punch"];
 
-          // Check if the length exceeds 200 and reset the state if true
-          setCycleCount((prevCycleCount) => {
-            const updatedCycleCount = [...prevCycleCount, newCycleCount];
-            return updatedCycleCount.length > 200 ? [] : updatedCycleCount;
-          });
-
-          setPower((prevPower) => {
-            const updatedPower = [...prevPower, newPower];
-            return updatedPower.length > 200 ? [] : updatedPower;
-          });
-
-          setPressure((prevPressure) => {
-            const updatedPressure = [...prevPressure, newPressure];
-            return updatedPressure.length > 200 ? [] : updatedPressure;
-          });
-
-          setForce((prevForce) => {
-            const updatedForce = [...prevForce, newForce];
-            return updatedForce.length > 200 ? [] : updatedForce;
-          });
-
-          setPunchPosition((prevPosition) => {
-            const updatedPosition = [...prevPosition, newPosition];
-            return updatedPosition.length > 200 ? [] : updatedPosition;
-          });
-
+          setCycleCount((prev) => [...prev, newCycleCount].slice(-200));
+          setPower((prev) => [...prev, newPower].slice(-200));
+          setPressure((prev) => [...prev, newPressure].slice(-200));
+          setForce((prev) => [...prev, newForce].slice(-200));
+          setPunchPosition((prev) => [...prev, newPosition].slice(-200));
         } catch (error) {
           console.error('Error parsing WebSocket data:', error);
         }
@@ -81,41 +104,41 @@ export default function Home() {
     };
   }, [connectWebSocket, apiKey]);
 
-  // Function to filter data by start and end sample
-  const filterDataBySample = (data: number[], cycleData: number[]) => {
-    if (startSample === 0 && endSample === 20000) return data;
+  // Function to filter data by start and end datetime
+  const filterDataByDateTime = (data: number[], cycleData: string[]) => {
+    const start = parseThaiDateTime(startSample).getTime();
+    const end = parseThaiDateTime(endSample).getTime();
 
     return data.filter((_, index) => {
-      return cycleData[index] >= startSample && cycleData[index] <= endSample;
+      const timestamp = parseThaiDateTime(cycleData[index]).getTime();
+      return timestamp >= start && timestamp <= end;
     });
   };
 
   // Filtered data
-  const filteredPower = filterDataBySample(power, cycleCount);
-  const filteredPressure = filterDataBySample(pressure, cycleCount);
-  const filteredForce = filterDataBySample(force, cycleCount);
-  const filteredPunchPosition = filterDataBySample(punchPosition, cycleCount);
+  const filteredPower = filterDataByDateTime(power, cycleCount);
+  const filteredPressure = filterDataByDateTime(pressure, cycleCount);
+  const filteredForce = filterDataByDateTime(force, cycleCount);
+  const filteredPunchPosition = filterDataByDateTime(punchPosition, cycleCount);
 
-  // Prepare chart data for filtered results
-  const powerChartData = filteredPower.map((_, index) => ({
-    cycleCount: cycleCount[index],
-    var1: filteredPower[index],
-  }));
+  // Prepare chart data
+  const createChartData = (filteredData: number[]) =>
+    filteredData.map((_, index) => ({
+      cycleCount: new Date().toLocaleString("th-TH", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }),
+      var1: filteredData[index],
+    }));
 
-  const pressureChartData = filteredPressure.map((_, index) => ({
-    cycleCount: cycleCount[index],
-    var1: filteredPressure[index],
-  }));
-
-  const forceChartData = filteredForce.map((_, index) => ({
-    cycleCount: cycleCount[index],
-    var1: filteredForce[index],
-  }));
-
-  const punchPositionChartData = filteredPunchPosition.map((_, index) => ({
-    cycleCount: cycleCount[index],
-    var1: filteredPunchPosition[index],
-  }));
+  const powerChartData = createChartData(filteredPower);
+  const pressureChartData = createChartData(filteredPressure);
+  const forceChartData = createChartData(filteredForce);
+  const punchPositionChartData = createChartData(filteredPunchPosition);
 
   const powerLineChartConfig = {
     responsive: true,
@@ -125,7 +148,7 @@ export default function Home() {
         position: 'bottom',
         title: {
           display: true,
-          text: 'Cycle Count',
+          text: 'Datetime',
         },
       },
       y: {
@@ -145,7 +168,7 @@ export default function Home() {
         position: 'bottom',
         title: {
           display: true,
-          text: 'Cycle Count',
+          text: 'Datetime',
         },
       },
       y: {
@@ -165,7 +188,7 @@ export default function Home() {
         position: 'bottom',
         title: {
           display: true,
-          text: 'Cycle Count',
+          text: 'Datetime',
         },
       },
       y: {
@@ -185,7 +208,7 @@ export default function Home() {
         position: 'bottom',
         title: {
           display: true,
-          text: 'Cycle Count',
+          text: 'Datetime',
         },
       },
       y: {
@@ -197,7 +220,6 @@ export default function Home() {
     },
   };
 
-  
   const numberOfSamples = cycleCount.length;
   const totalSamples = 200;
 
@@ -207,7 +229,7 @@ export default function Home() {
         <div className='flex py-4'>
           <span className="text-6xl font-bold">Welcome to </span>
           <span className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-orange-400">
-          &nbsp;OpenFruit
+            &nbsp;OpenFruit
           </span>
         </div>
         <p className="text-lg text-gray-500 py-4 flex">
@@ -223,53 +245,52 @@ export default function Home() {
               onChange={(e) => setApiKey(e.target.value)}
             />
             <button
-              className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' 
-                }`}
+              className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}`}
               onClick={() => setConnectWebSocket(!connectWebSocket)}
             >
               {connectWebSocket ? 'Disconnect' : 'Connect'}
             </button>
           </div>
 
-          <div className="flex flex-col py-4 justify-between">
-            <div className='flex justify-between md:w-1/3'>
-              <label className='font-LINESeedSansTH_W_Bd pr-2'>Start:</label>
+          <div className="flex flex-col py-4">
+            <div className="flex justify-between md:w-1/3">
+              <label className="font-LINESeedSansTH_W_Bd pr-2">Start:</label>
               <input
-                type="number"
+                type="datetime"
                 value={startSample}
-                onChange={(e) => setStartSample(Number(e.target.value))}
+                onChange={(e) => setStartSample(e.target.value)}
+                className="border p-2"
               />
             </div>
-            <div className='flex justify-between md:w-1/3 pt-2'>
-              <label className='font-LINESeedSansTH_W_Bd pr-5'>End:</label>
+            <div className="flex justify-between md:w-1/3 pt-2">
+              <label className="font-LINESeedSansTH_W_Bd pr-5">End:</label>
               <input
-                type="number"
+                type="datetime"
                 value={endSample}
-                onChange={(e) => setEndSample(Number(e.target.value))}
+                onChange={(e) => setEndSample(e.target.value)}
+                className="border p-2"
               />
             </div>
-            <div className='pt-2'>
-              <label className='font-LINESeedSansTH_W_Bd'>Number of samples: </label>
+
+            <div className="pt-2">
+              <label className="font-LINESeedSansTH_W_Bd">Number of samples: </label>
               {numberOfSamples}/{totalSamples}
             </div>
           </div>
         </div>
-
-        
-        
 
         <div className='gap-4 flex flex-col md:w-screen w-full'>
           <div className='w-full md:w-3/4'>
             <LineChartComponent title={'Energy Consumption'} description={'การใช้พลังงานของเครื่องจักร'} chartData={powerChartData} chartConfig={powerLineChartConfig} varname={'กำลัง'} color={'#8884d8'}/>
           </div>
           <div className='w-full md:w-3/4'>
-            <LineChartComponent title={'Pressure'} description={'ค่า Square Wave ที่แสดงถึงความดันของ Punch'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} varname={'ความดัน'} color={'#82ca9d'} />
+            <LineChartComponent title={'Pressure'} description={'ค่าความดันของเครื่องจักร'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} varname={'ความดัน'} color={'#82ca9d'}/>
           </div>
           <div className='w-full md:w-3/4'>
-            <LineChartComponent title={'Force'} description={'ค่า Square Wave ที่แสดงถึงแรงของ Punch'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#ff7300'} />
+            <LineChartComponent title={'Force'} description={'แรงที่กระทำของเครื่องจักร'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#f06c7a'}/>
           </div>
           <div className='w-full md:w-3/4'>
-            <LineChartComponent title={'Punch Position'} description={'ค่า Triangle wave ที่แสดงถึงตำแหน่งของ Punch'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#ff0000'}/>
+            <LineChartComponent title={'Punch Position'} description={'ตำแหน่งของหัวแม่แรง'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#a768de'}/>
           </div>
         </div>
       </main>

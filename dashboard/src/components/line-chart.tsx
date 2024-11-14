@@ -65,11 +65,7 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
       ];
       setZoomDomain({ x1, x2 });
     }
-    setSelectionArea({ startX: null, endX: null }); // Reset selection area
-  };
-
-  const resetZoom = () => {
-    setZoomDomain({ x1: null, x2: null });
+    setSelectionArea({ startX: null, endX: null });
   };
 
   return (
@@ -125,12 +121,6 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex justify-center">
-        <button
-          onClick={resetZoom}
-          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 transition-all hover:scale-105"
-        >
-          Reset Zoom
-        </button>
       </CardFooter>
     </Card>
   );
