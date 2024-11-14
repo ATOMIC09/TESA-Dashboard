@@ -202,66 +202,73 @@ export default function Home() {
   const totalSamples = 200;
 
   return (
-    <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+    <div className="p-8 pb-20 gap-16 sm:p-20 min-h-screen">
       <main className="font-LINESeedSansTH_W_Rg">
-        <div className='flex justify-center py-4'>
+        <div className='flex py-4'>
           <span className="text-6xl font-bold">Welcome to </span>
           <span className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-orange-400">
           &nbsp;OpenFruit
           </span>
         </div>
-        <p className="text-lg text-gray-500 py-2 flex justify-center">
+        <p className="text-lg text-gray-500 py-4 flex">
           An extraordinary dashboard for TESA Top Gun Rally 2024
         </p>
-        <div className="flex flex-wrap gap-4 items-center justify-center py-4">
-          <input
-            type="text"
-            className="border rounded px-4 py-4 w-96 text-lg"
-            placeholder="โปรดใส่ API Key"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-          />
-          <button
-            className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' 
-              }`}
-            onClick={() => setConnectWebSocket(!connectWebSocket)}
-          >
-            {connectWebSocket ? 'Disconnect' : 'Connect'}
-          </button>
+        <div className='border-2 rounded-lg p-6 w-96 shadow-sm mb-6'>
+          <div className="flex flex-wrap gap-4 py-4">
+            <input
+              type="text"
+              className="border rounded px-4 py-4 w-96 text-lg"
+              placeholder="โปรดใส่ API Key"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+            />
+            <button
+              className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' 
+                }`}
+              onClick={() => setConnectWebSocket(!connectWebSocket)}
+            >
+              {connectWebSocket ? 'Disconnect' : 'Connect'}
+            </button>
+          </div>
+
+          <div className="flex flex-col py-4 justify-between">
+            <div className='flex justify-between md:w-1/3'>
+              <label className='font-LINESeedSansTH_W_Bd pr-2'>Start:</label>
+              <input
+                type="number"
+                value={startSample}
+                onChange={(e) => setStartSample(Number(e.target.value))}
+              />
+            </div>
+            <div className='flex justify-between md:w-1/3 pt-2'>
+              <label className='font-LINESeedSansTH_W_Bd pr-5'>End:</label>
+              <input
+                type="number"
+                value={endSample}
+                onChange={(e) => setEndSample(Number(e.target.value))}
+              />
+            </div>
+            <div className='pt-2'>
+              <label className='font-LINESeedSansTH_W_Bd'>Number of samples: </label>
+              {numberOfSamples}/{totalSamples}
+            </div>
+          </div>
         </div>
 
-        <div className="flex justify-center py-4">
-          <label className="mr-4">Start Sample:</label>
-          <input
-            type="number"
-            value={startSample}
-            onChange={(e) => setStartSample(Number(e.target.value))}
-          />
-          <label className="mx-4">End Sample:</label>
-          <input
-            type="number"
-            value={endSample}
-            onChange={(e) => setEndSample(Number(e.target.value))}
-          />
-        </div>
+        
+        
 
-        <div>
-          <p className="text-lg text-gray-500 py-2 flex justify-center">
-            Number of samples: {numberOfSamples}/{totalSamples}
-          </p>
-        </div>
-
-        <div className='gap-4 items-center justify-center flex flex-col md:w-screen w-full'>
-          <div className='w-full md:w-3/4 px-8'>
+        <div className='gap-4 flex flex-col md:w-screen w-full'>
+          <div className='w-full md:w-3/4'>
             <LineChartComponent title={'Energy Consumption'} description={'การใช้พลังงานของเครื่องจักร'} chartData={powerChartData} chartConfig={powerLineChartConfig} varname={'กำลัง'} color={'#8884d8'}/>
           </div>
-          <div className='w-full md:w-3/4 px-8'>
+          <div className='w-full md:w-3/4'>
             <LineChartComponent title={'Pressure'} description={'ค่า Square Wave ที่แสดงถึงความดันของ Punch'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} varname={'ความดัน'} color={'#82ca9d'} />
           </div>
-          <div className='w-full md:w-3/4 px-8'>
+          <div className='w-full md:w-3/4'>
             <LineChartComponent title={'Force'} description={'ค่า Square Wave ที่แสดงถึงแรงของ Punch'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#ff7300'} />
           </div>
-          <div className='w-full md:w-3/4 px-8'>
+          <div className='w-full md:w-3/4'>
             <LineChartComponent title={'Punch Position'} description={'ค่า Triangle wave ที่แสดงถึงตำแหน่งของ Punch'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#ff0000'}/>
           </div>
         </div>
