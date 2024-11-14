@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g
 
 # Libraries to link
-LIBS = -lm -lpthread
+LIBS = -lm -lpthread -lsqlite3
 
 # Target application name
 TARGET = main
@@ -25,7 +25,7 @@ $(TARGET): $(OBJS)
 
 # Clean up build artifacts
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) *.db
 
 # Run the application
 run: $(TARGET)
