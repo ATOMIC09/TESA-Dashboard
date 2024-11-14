@@ -38,7 +38,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ tabledatas }) => {
 
   return (
     <Table>
-      <TableCaption>รายการไฟล์ล่าสุดในเซิร์ฟเวอร์</TableCaption>
+      <TableCaption className="py-1">รายการไฟล์ล่าสุดในเซิร์ฟเวอร์</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Device ID</TableHead>
@@ -52,7 +52,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ tabledatas }) => {
           <TableRow key={tabledata.deviceId}>
             <TableCell>{tabledata.deviceId}</TableCell>
             <TableCell>{formatTimestamp(tabledata.timeStamp)}</TableCell>
-            <TableCell>{tabledata.filePath.split('/static/sound/')}</TableCell>
+            <TableCell>{tabledata.filePath.split('/').pop()?.replace(/_[a-f0-9\-]+\.wav$/, '.wav')}</TableCell>
             <TableCell>
               <a target="_blank" rel="noopener noreferrer" href={`${NEXT_PUBLIC_BACKENDSERVER}${tabledata.filePath.split('/static/sound/,')}`}>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

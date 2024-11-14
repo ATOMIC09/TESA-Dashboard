@@ -116,6 +116,7 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
               stroke={color}
               strokeWidth={2}
               dot={false}
+              animationDuration={1}
             />
           </LineChart>
         </ChartContainer>
