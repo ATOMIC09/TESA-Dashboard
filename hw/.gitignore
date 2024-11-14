@@ -3,3 +3,4 @@
 main
 *.db
 *.db-journal
+.env

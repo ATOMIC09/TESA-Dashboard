@@ -3,13 +3,13 @@ CC = gcc
 CFLAGS = -Wall -Wextra -g
 
 # Libraries to link
-LIBS = -lm -lpthread -lsqlite3
+LIBS = -lm -lpthread -lsqlite3 -lcurl -lpaho-mqtt3c -lcjson
 
 # Target application name
 TARGET = main
 
 # Source files and object files
-SRCS = main.c ml_unit.c sound_processing_unit.c shared_data.c
+SRCS = main.c ml_unit.c sound_processing_unit.c shared_data.c ml_sender.c
 OBJS = $(SRCS:.c=.o)
 
 # Default target to build the application
@@ -30,6 +30,11 @@ clean:
 # Run the application
 run: $(TARGET)
 	./$(TARGET)
+
+# Clean up build artifacts and run the application
+test:
+	make clean
+	make run
 
 # Phony targets
 .PHONY: all clean run
