@@ -3,9 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <sqlite3.h>
 
 extern void* sound_processing_unit();
 extern void* ml_unit();
