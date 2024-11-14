@@ -179,7 +179,7 @@ export default function Home() {
 
   const numberOfSamples = cycleCount.length;
   const totalSamples = 200;
-  
+
   return (
     <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="font-LINESeedSansTH_W_Rg">
@@ -213,17 +213,17 @@ export default function Home() {
             Number of samples: {numberOfSamples}/{totalSamples}
           </p>
         </div>
-        <div className='gap-4 items-center justify-center flex flex-col w-screen'>
-          <div className='w-3/4 px-8'>
+        <div className='gap-4 items-center justify-center flex flex-col md:w-screen w-full'>
+          <div className='w-full md:w-3/4 px-8'>
             <LineChartComponent title={'Energy Consumption'} description={'การใช้พลังงานของเครื่องจักร'} chartData={powerChartData} chartConfig={powerLineChartConfig} varname={'กำลัง'} color={'#8884d8'}/>
           </div>
-          <div className='w-3/4 px-8'>
+          <div className='w-full md:w-3/4 px-8'>
             <LineChartComponent title={'Pressure'} description={'ค่า Square Wave ที่แสดงถึงความดันของ Punch'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} varname={'ความดัน'} color={'#82ca9d'} />
           </div>
-          <div className='w-3/4 px-8'>
+          <div className='w-full md:w-3/4 px-8'>
             <LineChartComponent title={'Force'} description={'ค่า Square Wave ที่แสดงถึงแรงของ Punch'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#ff7300'} />
           </div>
-          <div className='w-3/4 px-8'>
+          <div className='w-full md:w-3/4 px-8'>
             <LineChartComponent title={'Punch Position'} description={'ค่า Triangle wave ที่แสดงถึงตำแหน่งของ Punch'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#ff0000'}/>
           </div>
         </div>
