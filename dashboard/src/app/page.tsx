@@ -36,30 +36,30 @@ export default function Home() {
           const newForce = response["Force"];
           const newPosition = response["Position of the Punch"];
 
-          // Append new data to the existing data arrays and limit to last 10 items
+          // Check if the length exceeds 200 and reset the state if true
           setCycleCount((prevCycleCount) => {
             const updatedCycleCount = [...prevCycleCount, newCycleCount];
-            return updatedCycleCount.slice(-200);
+            return updatedCycleCount.length > 200 ? [] : updatedCycleCount;
           });
 
           setPower((prevPower) => {
             const updatedPower = [...prevPower, newPower];
-            return updatedPower.slice(-200);
+            return updatedPower.length > 200 ? [] : updatedPower;
           });
 
           setPressure((prevPressure) => {
             const updatedPressure = [...prevPressure, newPressure];
-            return updatedPressure.slice(-200);
+            return updatedPressure.length > 200 ? [] : updatedPressure;
           });
 
           setForce((prevForce) => {
             const updatedForce = [...prevForce, newForce];
-            return updatedForce.slice(-200);
+            return updatedForce.length > 200 ? [] : updatedForce;
           });
 
           setPunchPosition((prevPosition) => {
             const updatedPosition = [...prevPosition, newPosition];
-            return updatedPosition.slice(-200);
+            return updatedPosition.length > 200 ? [] : updatedPosition;
           });
 
         } catch (error) {
@@ -177,6 +177,9 @@ export default function Home() {
     },
   };
 
+  const numberOfSamples = cycleCount.length;
+  const totalSamples = 200;
+  
   return (
     <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="font-LINESeedSansTH_W_Rg">
@@ -205,6 +208,11 @@ export default function Home() {
             {connectWebSocket ? 'Disconnect' : 'Connect'}
           </button>
         </div>
+        <div>
+          <p className="text-lg text-gray-500 py-2 flex justify-center">
+            Number of samples: {numberOfSamples}/{totalSamples}
+          </p>
+        </div>
         <div className='gap-4 items-center justify-center flex flex-col w-screen'>
           <div className='w-3/4 px-8'>
             <LineChartComponent title={'Energy Consumption'} description={'การใช้พลังงานของเครื่องจักร'} chartData={powerChartData} chartConfig={powerLineChartConfig} varname={'กำลัง'} color={'#8884d8'}/>
@@ -213,7 +221,7 @@ export default function Home() {
             <LineChartComponent title={'Pressure'} description={'ค่า Square Wave ที่แสดงถึงความดันของ Punch'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} varname={'ความดัน'} color={'#82ca9d'} />
           </div>
           <div className='w-3/4 px-8'>
-            <LineChartComponent title={'Force'} description={'ค่า Square Wave ที่แสดงถึงแรงของ Punch'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#ff7300'}s/>
+            <LineChartComponent title={'Force'} description={'ค่า Square Wave ที่แสดงถึงแรงของ Punch'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#ff7300'} />
           </div>
           <div className='w-3/4 px-8'>
             <LineChartComponent title={'Punch Position'} description={'ค่า Triangle wave ที่แสดงถึงตำแหน่งของ Punch'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#ff0000'}/>
