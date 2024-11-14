@@ -1,6 +1,16 @@
 "use client";
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip } from "recharts";
+import { useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Brush,
+  ReferenceArea,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -9,16 +19,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-} from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 
 interface LineChartComponentProps {
   title: string;
   description: string;
-  chartData: Array<{ cycleCount: number; var1: number; var2: number; var3: number }>;
+  chartData: Array<{
+    cycleCount: number;
+    [key: string]: number;
+  }>;
   chartConfig: ChartConfig;
+  varname: string;
+  color: string;
 }
 
 export const LineChartComponent: React.FC<LineChartComponentProps> = ({
@@ -26,7 +38,40 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
   description,
   chartData,
   chartConfig,
+  varname,
+  color,
 }) => {
+  const [zoomDomain, setZoomDomain] = useState<{ x1: number | null; x2: number | null }>({
+    x1: null,
+    x2: null,
+  });
+
+  const [selectionArea, setSelectionArea] = useState<{ startX: number | null; endX: number | null }>({
+    startX: null,
+    endX: null,
+  });
+
+  const handleMouseDown = (e: any) => {
+    if (e && e.activeLabel != null) {
+      setSelectionArea({ startX: e.activeLabel, endX: null });
+    }
+  };
+
+  const handleMouseUp = (e: any) => {
+    if (selectionArea.startX !== null && selectionArea.endX !== null) {
+      const [x1, x2] = [
+        Math.min(selectionArea.startX, selectionArea.endX),
+        Math.max(selectionArea.startX, selectionArea.endX),
+      ];
+      setZoomDomain({ x1, x2 });
+    }
+    setSelectionArea({ startX: null, endX: null }); // Reset selection area
+  };
+
+  const resetZoom = () => {
+    setZoomDomain({ x1: null, x2: null });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -36,12 +81,13 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
       <CardContent>
         <ChartContainer config={chartConfig}>
           <LineChart
-            accessibilityLayer
             data={chartData}
             margin={{
               left: 12,
               right: 12,
             }}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -50,47 +96,41 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
               axisLine={false}
               tickMargin={8}
               tickFormatter={(value) => value.toString()}
+              domain={
+                zoomDomain.x1 !== null && zoomDomain.x2 !== null
+                  ? [zoomDomain.x1, zoomDomain.x2]
+                  : ["auto", "auto"]
+              }
             />
-            <YAxis
-              domain={['auto', 'auto']} // Ensure the Y-axis scales properly
-              
-            />
+            <YAxis domain={["auto", "auto"]} />
             <Tooltip />
+            {selectionArea.startX !== null && selectionArea.endX !== null && (
+              <ReferenceArea
+                x1={selectionArea.startX}
+                x2={selectionArea.endX}
+                strokeOpacity={0.3}
+                fill="#8884d8"
+              />
+            )}
+            <Brush height={30} />
             <Line
               dataKey="var1"
+              name={varname}
               type="monotone"
-              stroke="#ff7300" // Example fixed color for L1
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              dataKey="var2"
-              type="monotone"
-              stroke="#387908" // Example fixed color for L2
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              dataKey="var3"
-              type="monotone"
-              stroke="#0060ff" // Example fixed color for L3
+              stroke={color}
               strokeWidth={2}
               dot={false}
             />
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        {/* <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this voltage <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Showing total visitors for the last 6 months
-            </div>
-          </div>
-        </div> */}
+      <CardFooter className="flex justify-center">
+        <button
+          onClick={resetZoom}
+          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 transition-all hover:scale-105"
+        >
+          Reset Zoom
+        </button>
       </CardFooter>
     </Card>
   );

@@ -6,24 +6,11 @@ import { LineChartComponent } from "@/components/line-chart";
 export default function Home() {
   const [apiKey, setApiKey] = useState('');
   const [connectWebSocket, setConnectWebSocket] = useState(false);
-
-  // States to store historical data for chart
-  const [voltageL1, setVoltageL1] = useState<number[]>([]);
-  const [voltageL2, setVoltageL2] = useState<number[]>([]);
-  const [voltageL3, setVoltageL3] = useState<number[]>([]);
   const [cycleCount, setCycleCount] = useState<number[]>([]);
   const [power, setPower] = useState<number[]>([]);
   const [pressure, setPressure] = useState<number[]>([]);
   const [force, setForce] = useState<number[]>([]);
   const [punchPosition, setPunchPosition] = useState<number[]>([]);
-
-
-  interface LineChartComponentProps {
-    title: string;
-    description: string;
-    chartData: number[];
-    chartConfig: {};
-  }
 
   // WebSocket connection and handling
   useEffect(() => {
@@ -44,9 +31,6 @@ export default function Home() {
 
           // Extract data voltage
           const newCycleCount = response["Cycle Count"];
-          const newVoltageL1 = response["Voltage"]["L1-GND"];
-          const newVoltageL2 = response["Voltage"]["L2-GND"];
-          const newVoltageL3 = response["Voltage"]["L3-GND"];
           const newPower = response["Energy Consumption"]["Power"];
           const newPressure = response["Pressure"];
           const newForce = response["Force"];
@@ -55,42 +39,27 @@ export default function Home() {
           // Append new data to the existing data arrays and limit to last 10 items
           setCycleCount((prevCycleCount) => {
             const updatedCycleCount = [...prevCycleCount, newCycleCount];
-            return updatedCycleCount.slice(-10);
-          });
-
-          setVoltageL1((prevL1) => {
-            const updatedL1 = [...prevL1, newVoltageL1];
-            return updatedL1.slice(-10);
-          });
-
-          setVoltageL2((prevL2) => {
-            const updatedL2 = [...prevL2, newVoltageL2];
-            return updatedL2.slice(-10);
-          });
-
-          setVoltageL3((prevL3) => {
-            const updatedL3 = [...prevL3, newVoltageL3];
-            return updatedL3.slice(-10);
+            return updatedCycleCount.slice(-200);
           });
 
           setPower((prevPower) => {
             const updatedPower = [...prevPower, newPower];
-            return updatedPower.slice(-10);
+            return updatedPower.slice(-200);
           });
 
           setPressure((prevPressure) => {
             const updatedPressure = [...prevPressure, newPressure];
-            return updatedPressure.slice(-10);
+            return updatedPressure.slice(-200);
           });
 
           setForce((prevForce) => {
             const updatedForce = [...prevForce, newForce];
-            return updatedForce.slice(-10);
+            return updatedForce.slice(-200);
           });
 
           setPunchPosition((prevPosition) => {
             const updatedPosition = [...prevPosition, newPosition];
-            return updatedPosition.slice(-10);
+            return updatedPosition.slice(-200);
           });
 
         } catch (error) {
@@ -107,14 +76,6 @@ export default function Home() {
       }
     };
   }, [connectWebSocket, apiKey]);
-
-  // Prepare chart data from historical data
-  const voltageChartData = voltageL1.map((_, index) => ({
-    cycleCount: cycleCount[index],
-    var1: voltageL1[index],
-    var2: voltageL2[index],
-    var3: voltageL3[index],
-  }));
 
   const powerChartData = power.map((_, index) => ({
     cycleCount: cycleCount[index],
@@ -135,26 +96,6 @@ export default function Home() {
     cycleCount: cycleCount[index],
     var1: punchPosition[index],
   }));
-  
-  const voltageLineChartConfig = {
-    responsive: true,
-    scales: {
-      x: {
-        type: 'linear',
-        position: 'bottom',
-        title: {
-          display: true,
-          text: 'Cycle Count',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Voltage (V)',
-        },
-      },
-    },
-  };
 
   const powerLineChartConfig = {
     responsive: true,
@@ -257,28 +198,25 @@ export default function Home() {
             onChange={(e) => setApiKey(e.target.value)}
           />
           <button
-            className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500' : 'bg-green-500'
+            className={`mx-4 px-6 py-2 text-white rounded hover:scale-105 transition-all ${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600' 
               }`}
             onClick={() => setConnectWebSocket(!connectWebSocket)}
           >
             {connectWebSocket ? 'Disconnect' : 'Connect'}
           </button>
         </div>
-        <div className='gap-4 items-center justify-center grid grid-cols-3'>
-          <div className='w-full'>
-            <LineChartComponent title={'Power'} description={'กราฟแสดงการเปรียบเทียบพลังงานในแต่ละ Cycle'} chartData={powerChartData} chartConfig={powerLineChartConfig} />
+        <div className='gap-4 items-center justify-center flex flex-col w-screen'>
+          <div className='w-3/4 px-8'>
+            <LineChartComponent title={'Energy Consumption'} description={'การใช้พลังงานของเครื่องจักร'} chartData={powerChartData} chartConfig={powerLineChartConfig} varname={'กำลัง'} color={'#8884d8'}/>
           </div>
-          <div className='w-full'>
-            <LineChartComponent title={'Voltage'} description={'กราฟแสดงการเปรียบเทียบแรงดันไฟฟ้าในแต่ละ Line เทียบ Ground'} chartData={voltageChartData} chartConfig={voltageLineChartConfig} />
+          <div className='w-3/4 px-8'>
+            <LineChartComponent title={'Pressure'} description={'ค่า Square Wave ที่แสดงถึงความดันของ Punch'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} varname={'ความดัน'} color={'#82ca9d'} />
           </div>
-          <div className='w-full'>
-            <LineChartComponent title={'Pressure'} description={'กราฟแสดงการเปรียบเทียบความดันในแต่ละ Cycle'} chartData={pressureChartData} chartConfig={pressureLineChartConfig} />
+          <div className='w-3/4 px-8'>
+            <LineChartComponent title={'Force'} description={'ค่า Square Wave ที่แสดงถึงแรงของ Punch'} chartData={forceChartData} chartConfig={forceLineChartConfig} varname={'แรง'} color={'#ff7300'}s/>
           </div>
-          <div className='w-full'>
-            <LineChartComponent title={'Force'} description={'กราฟแสดงการเปรียบเทียบแรงในแต่ละ Cycle'} chartData={forceChartData} chartConfig={forceLineChartConfig} />
-          </div>
-          <div className='w-full'>
-            <LineChartComponent title={'Punch Position'} description={'กราฟแสดงการเปรียบเทียบตำแหน่งของ Punch ในแต่ละ Cycle'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} />
+          <div className='w-3/4 px-8'>
+            <LineChartComponent title={'Punch Position'} description={'ค่า Triangle wave ที่แสดงถึงตำแหน่งของ Punch'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#ff0000'}/>
           </div>
         </div>
       </main>
