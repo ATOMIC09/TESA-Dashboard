@@ -103,7 +103,7 @@ void* ml_sender() {
     const char* client_id = getenv("client_id");
     const char* username = getenv("username");
     const char* password = getenv("password");
-    const char* topic = "rpi/mlu/data";
+    const char* topic = "rpi/mlu/data"; // 10000000edec2a6b
 
     sqlite3* db = NULL;
     MQTTClient client;

@@ -10,6 +10,7 @@ TARGET = main
 
 # Source files and object files
 SRCS = main.c ml_unit.c sound_processing_unit.c shared_data.c ml_sender.c
+# cepstralCoefficients.c elementwiseOperationInPlace.c FFTImplementationCallback.c insertionsort.c internal_softmax.c introsort.c LSTMLayer.c mean.c mfcc.c minOrMax.c NeuralPredictAudio.c NeuralPredictAudio_data.c NeuralPredictAudio_emxutil.c NeuralPredictAudio_initialize.c NeuralPredictAudio_rtwutil.c NeuralPredictAudio_terminate.c predict.c predictForRNN.c rtGetInf.c rtGetNaN.c rt_nonfinite.c scores2label.c SoftmaxLayer.c std.c
 OBJS = $(SRCS:.c=.o)
 
 # Default target to build the application
@@ -32,7 +33,7 @@ run: $(TARGET)
 	./$(TARGET)
 
 # Clean up build artifacts and run the application
-test:
+suite:
 	make clean
 	make run
 
