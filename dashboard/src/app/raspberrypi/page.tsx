@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TableComponent from "@/components/TableComponent";
 import axios from 'axios';
 import { NEXT_PUBLIC_BACKENDSERVER } from "./config";
@@ -9,6 +9,7 @@ export default function RaspberryPi() {
     const [sounds, setSounds] = useState([]);
     const [apiKey, setApiKey] = useState('');
     const [connectBackend, setConnectBackend] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
 
     const getSounds = () => {
         if (connectBackend) {
@@ -34,13 +35,6 @@ export default function RaspberryPi() {
         );
         }
     }
-
-    const invoices = [
-        { deviceid: "INV001", filePath: "Paid", method: "Credit Card" },
-        { deviceid: "INV002", filePath: "Pending", method: "Bank Transfer" },
-        { deviceid: "INV003", filePath: "Paid", method: "PayPal" },
-      ]
-    const [isRecording, setIsRecording] = useState(false);
 
     return (
         <div className="p-8 pb-20 gap-16 sm:p-20 min-h-screen">
@@ -68,15 +62,14 @@ export default function RaspberryPi() {
                 </button>
             </div>
             
-            <button className={`${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`} onClick={() => setIsRecording(!isRecording)}>
-                {isRecording ? 'Stop Recording' : 'Start Recording'}
-            </button>
-
             <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
                 ไฟล์ที่บันทึกล่าสุด
                 <TableComponent tabledatas={sounds} />
             </div>
 
+            <button className={`${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`} onClick={() => setIsRecording(!isRecording)}>
+                {isRecording ? 'Stop Recording' : 'Start Recording'}
+            </button>
 
         </main>
         </div>

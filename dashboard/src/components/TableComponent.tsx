@@ -22,22 +22,38 @@ interface TableComponentProps {
 }
 
 const TableComponent: React.FC<TableComponentProps> = ({ tabledatas }) => {
+  // Function to format the timestamp based on Thailand locale
+  const formatTimestamp = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString("th-TH", {
+      timeZone: "Asia/Bangkok", // Thailand's time zone
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+  };
+
   return (
     <Table>
-      <TableCaption>A list of your recent tabledatas.</TableCaption>
+      <TableCaption>A list of recent files in the server.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Device ID</TableHead>
-          <TableHead>File Path</TableHead>
-          <TableHead className="text-right">Download</TableHead>
+          <TableHead>Device ID</TableHead>
+          <TableHead>Timestamp</TableHead>
+          <TableHead>File name</TableHead>
+          <TableHead>Download</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {tabledatas.map((tabledata) => (
           <TableRow key={tabledata.deviceId}>
-            <TableCell className="font-medium">{tabledata.deviceId}</TableCell>
+            <TableCell>{tabledata.deviceId}</TableCell>
+            <TableCell>{formatTimestamp(tabledata.timeStamp)}</TableCell>
             <TableCell>{tabledata.filePath.split('/static/sound/')}</TableCell>
-            <TableCell className="text-right">
+            <TableCell>
               <a target="_blank" rel="noopener noreferrer" href={`${NEXT_PUBLIC_BACKENDSERVER}${tabledata.filePath.split('/static/sound/,')}`}>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                   Download
