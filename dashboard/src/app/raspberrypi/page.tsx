@@ -11,6 +11,10 @@ export default function RaspberryPi() {
     const [mluData, setMluData] = useState<mluDatai[]>([]);
     const [isRecording, setIsRecording] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [isAutoMode, setIsAutoMode] = useState(false); // Toggle for Auto/Manual
+
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
 
     interface mluDatai {
         id: number;
@@ -26,10 +30,8 @@ export default function RaspberryPi() {
         protocol: 'ws',
     });
 
-    // References for the timeouts to reset the online status
     const dataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Create MQTT over WebSocket connection to get the predicted data from Raspberry Pi
     useEffect(() => {
         if (connectWebSocket) {
             client.on('connect', () => {
@@ -41,7 +43,6 @@ export default function RaspberryPi() {
                     console.log('Subscribed to rpi/mlu/data');
                 });
 
-                // Subscribe to the status topic
                 client.subscribe('rpi/10000000bab0b141/status', (err) => {
                     if (err) {
                         console.log(err);
@@ -53,15 +54,12 @@ export default function RaspberryPi() {
             client.on('message', (topic, message) => {
                 const data = JSON.parse(message.toString());
 
-                // If the message is from 'rpi/mlu/data'
                 if (topic === 'rpi/mlu/data') {
                     setIsOnline(true);
-                    // Reset the data timeout whenever a new message is received
                     if (dataTimeoutRef.current) {
-                        clearTimeout(dataTimeoutRef.current); // Clear previous timeout
+                        clearTimeout(dataTimeoutRef.current);
                     }
 
-                    // Handle the machine learning data
                     setMluData((prevData) => {
                         const updatedData = [
                             ...prevData,
@@ -76,15 +74,11 @@ export default function RaspberryPi() {
                         return updatedData.slice(-30);
                     });
 
-                    // Set a timeout to reset status to offline after 5 minutes of no data update
                     dataTimeoutRef.current = setTimeout(() => {
                         setIsOnline(false);
                         console.log('Raspberry Pi is offline due to no data update');
-                    }, 30 * 1000); // 30 seconds in milliseconds
-                } 
-                // If the message is from 'rpi/10000000bab0b141/status'
-                else if (topic === 'rpi/10000000bab0b141/status') {
-                    // If the status is 'online', set it as online
+                    }, 30 * 1000);
+                } else if (topic === 'rpi/10000000bab0b141/status') {
                     if (data.status === 'online') {
                         setIsOnline(true);
                     } else {
@@ -95,14 +89,14 @@ export default function RaspberryPi() {
 
             return () => {
                 if (dataTimeoutRef.current) {
-                    clearTimeout(dataTimeoutRef.current); // Clean up the data timeout on unmount
+                    clearTimeout(dataTimeoutRef.current);
                 }
                 client.end();
             };
         } else {
             client.end();
         }
-    }, [connectWebSocket]); // Dependency on connectWebSocket state
+    }, [connectWebSocket]);
 
     const mluConfig = {
         scales: {
@@ -124,25 +118,43 @@ export default function RaspberryPi() {
     const handleStartRecording = () => {
         if (isRecording) {
             setIsRecording(false);
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
             publishMessage('stopRecord');
         } else {
             setIsRecording(true);
-            publishMessage('startRecord');
+            setElapsedTime(0);
+            timerRef.current = setInterval(() => {
+                setElapsedTime((prevTime) => prevTime + 1);
+            }, 1000);
+            publishMessage(isAutoMode ? 'normalRecord' : 'startRecord');
         }
     };
 
     const publishMessage = (command: string) => {
         client.publish('rpi/10000000bab0b141/command',
-            JSON.stringify({
-                command: command,
-            }),
+            JSON.stringify({ command }),
             (err) => {
                 if (err) {
                     console.log(err);
                 }
-                console.log('Published start command');
+                console.log(`Published ${command} command`);
             });
-    }
+    };
+
+    const reset = () => {
+        setMluData([]);
+        setElapsedTime(0);
+    };
+
+    const formatElapsedTime = (seconds: number) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
 
     return (
         <div className="p-8 pb-20 gap-16 sm:p-20 min-h-screen">
@@ -165,21 +177,48 @@ export default function RaspberryPi() {
                     >
                         {connectWebSocket ? 'Disconnect' : 'Connect'}
                     </button>
-                    <button // reset button
+                    <button
                         className='bg-blue-500 hover:bg-blue-600 text-white rounded-md p-2 ml-2'
-                        onClick={() => setMluData([])}
+                        onClick={reset}
                     >
                         Reset
                     </button>
-                    {/* Separator */}
-                    <div className="border-2 rounded-md h-10 mx-4 border-gray-300"></div>
+                    <div className="border-2 rounded-md h-14 mx-4 border-gray-300"></div>
+                    <div className="mr-4">
+                        <span className="text-lg font-bold">Elapsed Time</span>
+                        <div>{formatElapsedTime(elapsedTime)}</div>
+                    </div>
+                    <div className="flex gap-4 mr-4">
+                        <div>
+                            <label className="text-lg font-bold">
+                                Mode
+                            </label>
+                            <div>
+                                {isAutoMode ? 'Auto' : 'Manual'}
+                            </div>
+                        </div>    
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only"
+                                checked={isAutoMode}
+                                onChange={() => setIsAutoMode(!isAutoMode)}
+                            />
+                            <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800">
+                                <div
+                                    className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
+                                        isAutoMode ? 'translate-x-5' : 'translate-x-0'
+                                    }`}
+                                ></div>
+                            </div>
+                        </label>
+                    </div>
                     <button
                         className={`${isRecording ? 'bg-red-900 hover:bg-red-950' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md p-2`}
                         onClick={handleStartRecording}
                     >
-                        {isRecording ? 'Stop Recording' : 'Start Recording'}
+                        {isRecording ? 'Stop Recording' : isAutoMode ? 'Auto Detect' : 'Start Recording'}
                     </button>
-
                 </div>
 
                 <div className="flex flex-row justify-between">
@@ -192,10 +231,9 @@ export default function RaspberryPi() {
                         color={'#a768de'}
                     />
                     <div className='border-2 rounded-lg shadow-sm min-w-[40em]'>
-                        <TableComponentForPi tabledatas={mluData}/>
+                        <TableComponentForPi tabledatas={mluData} />
                     </div>
-                </div>    
-
+                </div>
             </main>
         </div>
     );
