@@ -168,7 +168,7 @@ export default function RaspberryPi() {
 
                 <div className="py-4 flex">
                     <div className="flex flex-row items-center mr-4">
-                        <span className="text-lg font-bold">Status: </span>
+                        <span className="text-lg font-bold">Predict Status</span>
                         <div className={`w-4 h-4 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'} ml-2`}></div>
                     </div>
                     <button
