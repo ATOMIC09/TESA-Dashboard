@@ -1,1 +1,3 @@
-export const NEXT_PUBLIC_WEBSOCKET = process.env.NEXT_PUBLIC_WEBSOCKET || 'ws://openfruit-tesa.southeastasia.cloudapp.azure.com';
+export const NEXT_PUBLIC_MQTTWEBSOCKET = process.env.NEXT_PUBLIC_MQTTWEBSOCKET;
+export const NEXT_PUBLIC_MQTT_USERNAME = process.env.NEXT_PUBLIC_MQTT_USERNAME;
+export const NEXT_PUBLIC_MQTT_PASSWORD = process.env.NEXT_PUBLIC_MQTT_PASSWORD;

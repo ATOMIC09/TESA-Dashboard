@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 // import { LineChartComponent } from "@/components/line-chart";
-import {  NEXT_PUBLIC_WEBSOCKET } from "@/app/raspberrypi/config";
+import {  NEXT_PUBLIC_MQTTWEBSOCKET, NEXT_PUBLIC_MQTT_USERNAME, NEXT_PUBLIC_MQTT_PASSWORD } from "@/app/raspberrypi/config";
 import mqtt, { MqttClient } from "mqtt";
 
 export default function RaspberryPi() {
@@ -12,25 +12,32 @@ export default function RaspberryPi() {
 
     // Create MQTT over WebSocket connection to get the predicted data from Raspberry Pi
     useEffect(() => {
-        let ws: WebSocket | null = null;
-
         if (connectWebSocket) {
-            ws = new WebSocket(NEXT_PUBLIC_WEBSOCKET);
+            const client = mqtt.connect(NEXT_PUBLIC_MQTTWEBSOCKET || '', {
+                username: NEXT_PUBLIC_MQTT_USERNAME,
+                password: NEXT_PUBLIC_MQTT_PASSWORD,
+                protocol: 'ws',
+            });
       
-            ws.onopen = () => {
-              console.log('WebSocket connected.');
-              ws?.send(apiKey);
-            };
+            client.on('connect', () => {
+                console.log('Connected to MQTT broker');
       
-            ws.onmessage = (event) => {
-              try {
-                const response = JSON.parse(event.data);
-                console.log('WebSocket data received:', response);
-              } catch (error) {
-                console.error('Error parsing WebSocket data:', error);
-              }
+            client.subscribe('#', (err) => {
+                if (err) {
+                    console.log(err);
+                }
+                console.log('Subscribed to all topics');
             }
+            );
+            });
+
+            client.on('message', (topic, message) => {
+                console.log(`Received message from topic: ${topic}`);
+                console.log(message.toString());
+            });
+
         }
+        
     }, [connectWebSocket]);
     
 
@@ -45,9 +52,13 @@ export default function RaspberryPi() {
             </p>
 
             {/* Predicted from RPi */}
-            <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'>
+            {/* <div className='border-2 rounded-lg p-6 shadow-sm mb-6 mt-6'> */}
                 {/* <LineChartComponent title={'Predicted'} description={'ผลการทำนายจาก Raspberry Pi'} chartData={punchPositionChartData} chartConfig={punchPositionLineChartConfig} varname={'ตำแหน่ง'} color={'#a768de'}/> */}
-            </div>
+            {/* </div> */}
+
+            <button className={`${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`} onClick={() => setConnectWebSocket(!connectWebSocket)}>
+                {connectWebSocket ? 'Disconnect' : 'Connect'}
+            </button>
 
             {/* <button className={`${isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`} onClick={() => setIsRecording(!isRecording)}>
                 {isRecording ? 'Stop Recording' : 'Start Recording'}
