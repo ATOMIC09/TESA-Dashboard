@@ -1,6 +1,5 @@
 import express from 'express'
 import database from '../config/db'
-import { logger } from '../config/logger'
 import { validateAPIKey } from './middleware'
 
 
@@ -23,7 +22,7 @@ router.get("/",validateAPIKey,async (req : express.Request , res : express.Respo
         res.send(data)
     }
     catch (error){
-        logger.error(`${error}`);
+        console.log(`${error}`);
         res.status(500).send({ error: `${error}` })
     }
 })
