@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, use } from "react";
 import { LineChartComponentForPi } from "./line-chart-forpi";
 import TableComponentForPi from "./TableComponent-forpi";
 import { NEXT_PUBLIC_MQTTWEBSOCKET, NEXT_PUBLIC_MQTT_USERNAME, NEXT_PUBLIC_MQTT_PASSWORD } from "@/app/raspberrypi/config";
@@ -129,7 +129,7 @@ export default function RaspberryPi() {
             timerRef.current = setInterval(() => {
                 setElapsedTime((prevTime) => prevTime + 1);
             }, 1000);
-            publishMessage(isAutoMode ? 'normalRecord' : 'startRecord');
+            publishMessage('startRecord');
         }
     };
 
@@ -143,6 +143,14 @@ export default function RaspberryPi() {
                 console.log(`Published ${command} command`);
             });
     };
+
+    useEffect(() => {
+        if (isAutoMode) {
+            publishMessage('normalRecord');
+        } else {
+            publishMessage('stopRecord');
+        }
+    }, [isAutoMode]);
 
     const reset = () => {
         setMluData([]);
@@ -184,14 +192,10 @@ export default function RaspberryPi() {
                         Reset
                     </button>
                     <div className="border-2 rounded-md h-14 mx-4 border-gray-300"></div>
-                    <div className="mr-4">
-                        <span className="text-lg font-bold">Elapsed Time</span>
-                        <div>{formatElapsedTime(elapsedTime)}</div>
-                    </div>
                     <div className="flex gap-4 mr-4">
                         <div>
                             <label className="text-lg font-bold">
-                                Mode
+                                Recording Mode
                             </label>
                             <div>
                                 {isAutoMode ? 'Auto' : 'Manual'}
@@ -203,6 +207,7 @@ export default function RaspberryPi() {
                                 className="sr-only"
                                 checked={isAutoMode}
                                 onChange={() => setIsAutoMode(!isAutoMode)}
+                                disabled={isRecording}
                             />
                             <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800">
                                 <div
@@ -213,12 +218,18 @@ export default function RaspberryPi() {
                             </div>
                         </label>
                     </div>
+                    {!isAutoMode &&
+                    <div className="mr-4">
+                        <span className="text-lg font-bold">Elapsed Time</span>
+                        <div>{formatElapsedTime(elapsedTime)}</div>
+                    </div>}
+                    {!isAutoMode &&
                     <button
                         className={`${isRecording ? 'bg-red-900 hover:bg-red-950' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md p-2`}
                         onClick={handleStartRecording}
                     >
-                        {isRecording ? 'Stop Recording' : isAutoMode ? 'Auto Detect' : 'Start Recording'}
-                    </button>
+                        {isRecording ? 'Stop Recording' : 'Start Recording'}
+                    </button>}
                 </div>
 
                 <div className="flex flex-row justify-between">
