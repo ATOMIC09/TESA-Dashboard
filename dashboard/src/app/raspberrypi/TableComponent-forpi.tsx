@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import {
   Table,
   TableBody,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 // Define the type for tabledata data
 interface TableData {
@@ -19,7 +19,7 @@ interface TableData {
 }
 
 interface TableComponentForPiProps {
-  tabledatas: TableData[]
+  tabledatas: TableData[];
 }
 
 const TableComponentForPi: React.FC<TableComponentForPiProps> = ({ tabledatas }) => {
@@ -27,15 +27,17 @@ const TableComponentForPi: React.FC<TableComponentForPiProps> = ({ tabledatas })
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
     const milliseconds = date.getMilliseconds();
-    return date.toLocaleString("th-TH", {
-      timeZone: "Asia/Bangkok", // Thailand's time zone
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    }) + `.${milliseconds.toString().padStart(3, "0")}`;
+    return (
+      date.toLocaleString("th-TH", {
+        timeZone: "Asia/Bangkok", // Thailand's time zone
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      }) + `.${milliseconds.toString().padStart(3, "0")}`
+    );
   };
 
   // Convert X, N, F to full text
@@ -57,6 +59,9 @@ const TableComponentForPi: React.FC<TableComponentForPiProps> = ({ tabledatas })
     }
   };
 
+  // Reverse the tabledatas to show the latest data at the top
+  const reversedTableData = [...tabledatas].reverse(); // Create a shallow copy and reverse the array
+
   return (
     <Table className="m-4">
       <TableCaption>ผลลัพธ์การทำนาย</TableCaption>
@@ -68,7 +73,7 @@ const TableComponentForPi: React.FC<TableComponentForPiProps> = ({ tabledatas })
         </TableRow>
       </TableHeader>
       <TableBody>
-        {tabledatas.map((tabledata) => (
+        {reversedTableData.map((tabledata) => (
           <TableRow key={tabledata.id}>
             <TableCell>{formatTimestamp(tabledata.created_at)}</TableCell>
             <TableCell className={getClassificationStyle(tabledata.classification)}>
