@@ -14,6 +14,7 @@ export default function RaspberryPi() {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [isAutoMode, setIsAutoMode] = useState(false);
     const [logStatus, setLogStatus] = useState<string[]>([]);
+    const [isConnected, setIsConnected] = useState(false);
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -35,6 +36,7 @@ export default function RaspberryPi() {
     useEffect(() => {
         if (connectWebSocket) {
             client.on('connect', () => {
+                setIsConnected(true);
                 console.log('Connected to MQTT broker');
                 client.subscribe('rpi/mlu/data', (err) => {
                     if (err) {
@@ -49,6 +51,9 @@ export default function RaspberryPi() {
                     }
                     console.log('Subscribed to rpi/10000000bab0b141/status');
                 });
+
+                // Stop recording
+                publishMessage('stopRecord');
             });
 
             client.on('message', (topic, message) => {
@@ -93,9 +98,11 @@ export default function RaspberryPi() {
                     clearTimeout(dataTimeoutRef.current);
                 }
                 client.end();
+                setIsConnected(false);
             };
         } else {
             client.end();
+            setIsConnected(false);
         }
     }, [connectWebSocket]);
 
@@ -208,7 +215,7 @@ export default function RaspberryPi() {
                                 className="sr-only"
                                 checked={isAutoMode}
                                 onChange={() => setIsAutoMode(!isAutoMode)}
-                                disabled={isRecording}
+                                disabled={isRecording || !isConnected}
                             />
                             <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800">
                                 <div
@@ -228,6 +235,7 @@ export default function RaspberryPi() {
                     <button
                         className={`${isRecording ? 'bg-red-900 hover:bg-red-950' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md p-2`}
                         onClick={handleStartRecording}
+                        disabled={!isOnline}
                     >
                         {isRecording ? 'Stop Recording' : 'Start Recording'}
                     </button>}
