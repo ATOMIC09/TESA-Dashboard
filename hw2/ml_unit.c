@@ -15,6 +15,13 @@ void* ml_unit() {
 
             // Do something with the command
             if (strcmp(command, "update-model") == 0) {
+                if (getenv("MODEL_URL") == NULL) {
+                    pthread_mutex_lock(&model_update_data.lock);
+                    strcpy(model_update_data.shared_var, "Model Update Failed");
+                    pthread_cond_signal(&model_update_data.cond);
+                    pthread_mutex_unlock(&model_update_data.lock);
+                    continue;
+                }
                 pthread_mutex_lock(&model_update_data.lock);
                 strcpy(model_update_data.shared_var, "Model Update Triggered");
                 pthread_cond_signal(&model_update_data.cond);
