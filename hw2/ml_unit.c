@@ -15,6 +15,11 @@ void* ml_unit() {
 
             // Do something with the command
             if (strcmp(command, "update-model") == 0) {
+                pthread_mutex_lock(&model_update_data.lock);
+                strcpy(model_update_data.shared_var, "Model Update Triggered");
+                pthread_cond_signal(&model_update_data.cond);
+                pthread_mutex_unlock(&model_update_data.lock);
+
                 char result_payload_comamand[] = "wget %s -O static/model.zip";
                 char result_payload[256];
                 sprintf(result_payload, result_payload_comamand, getenv("MODEL_URL"));
@@ -27,6 +32,11 @@ void* ml_unit() {
                 const char all_c_files_bash[] = "find . -name '*.c'";
                 FILE* fp = popen(all_c_files_bash, "r");
                 if (fp == NULL) {
+                    pthread_mutex_lock(&model_update_data.lock);
+                    strcpy(model_update_data.shared_var, "Model Update Failed");
+                    pthread_cond_signal(&model_update_data.cond);
+                    pthread_mutex_unlock(&model_update_data.lock);
+
                     printf("Failed to run command\n" );
                     pclose(fp);
                 } else {
@@ -35,6 +45,11 @@ void* ml_unit() {
                         system("make");
                         system("./main");
                         pclose(fp);
+                        pthread_mutex_lock(&model_update_data.lock);
+                        strcpy(model_update_data.shared_var, "Model Update Success");
+                        pthread_cond_signal(&model_update_data.cond);
+                        pthread_mutex_unlock(&model_update_data.lock);
+
                         exit(0);
                     }
                     pclose(fp);
