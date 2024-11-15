@@ -17,3 +17,5 @@ _clang-format
 examples
 html
 interface
+
+static/*

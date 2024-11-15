@@ -35,18 +35,18 @@ void* sound_processing_unit() {
     sqlite3_stmt* stmt;
     time_t t;
     double x[48000];
+    double y[43200];
     while (1) {
-        for (int i = 0; i < 48000; i++) {
-            x[i] = (double)rand() / RAND_MAX;
-        }
-
-        // double m;
+        double m;
         bool isCandidate = true;
-        // CheckEvent(
-        //     x,
-        //     &m,
-        //     &isCandidate
-        // );
+        for (int i = 4800; i < 48000; i++) {
+            y[i - 4800] = x[i];
+        }
+        CheckEvent(
+            y,
+            &m,
+            &isCandidate
+        );
 
         
         time(&t);

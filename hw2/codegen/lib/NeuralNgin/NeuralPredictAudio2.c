@@ -57,6 +57,7 @@ void NeuralPredictAudio2(const double feature[14042],
   }
   memcpy(&r.f1[0], &feature[0], 14042U * sizeof(double));
   DeepLearningNetwork_predict(&net, &r, score);
+  predictResult->categoryNames[1].f1.data[0];
   predictResult->codes =
       scores2label(score, classNames, predictResult->categoryNames);
   *confidence = maximum(score);

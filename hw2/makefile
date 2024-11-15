@@ -30,7 +30,7 @@ clean:
 	rm -f $(OBJS) $(TARGET) *.db *.db-journal
 
 gone:
-	rm -f $(TARGET) *.db *.o *.db-journal
+	rm -f $(TARGET) $(OBJS) *.db *.o *.db-journal
 
 # Run the application
 run: $(TARGET)
