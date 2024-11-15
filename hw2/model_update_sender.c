@@ -1,6 +1,6 @@
 #include "main.h"
 
-int init_classification_database( sqlite3** db ) {
+int init_model_update_database( sqlite3** db ) {
 
     const char db_name[] = "model_update.db";
     const char table_name[] = "logs";
@@ -27,8 +27,8 @@ event TEXT NOT NULL);";
 
 void* model_update_sender() {
     sqlite3* db = NULL;
-    sqlite3_stmt* stmt
-    if (init_classification_database(&db) != 0) {
+    sqlite3_stmt* stmt;
+    if (init_model_update_database(&db) != 0) {
         printf("Failed to initialize SQLite database\n");
         exit(1);
     }
