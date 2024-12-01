@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -19,16 +20,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 
 interface LineChartComponentProps {
   title: string;
   description: string;
   chartData: Array<{
-    cycleCount: number;
-    [key: string]: number;
+    cycleCount: string;
+    [key: string]: number | string;
   }>;
-  chartConfig: ChartConfig;
+  chartConfig: any;
   varname: string;
   color: string;
 }
@@ -57,7 +58,7 @@ export const LineChartComponent: React.FC<LineChartComponentProps> = ({
     }
   };
 
-  const handleMouseUp = (e: any) => {
+  const handleMouseUp = () => {
     if (selectionArea.startX !== null && selectionArea.endX !== null) {
       const [x1, x2] = [
         Math.min(selectionArea.startX, selectionArea.endX),

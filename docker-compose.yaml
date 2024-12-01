@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./rest_api
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./.env
+    depends_on:
+      - mongodb
+      - mqtt
+    volumes:
+      - ./rest_api/api_key.txt:/api_key.txt:ro
+
+  frontend:
+    build:
+      context: ./dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    env_file:
+      - ./.env
+
+  mqtt:
+    image: eclipse-mosquitto:2.0
+    container_name: mqtt
+    ports:
+      - "1883:1883"   # MQTT port
+      - "9001:9001"   # WebSocket port
+    volumes:
+      - ./mosquitto/passwd:/mosquitto/passwd:ro  # Mount the passwd file
+      - ./mosquitto/data:/mosquitto/data  # Mount data folder for persistence
+      - ./mosquitto/log:/mosquitto/log  # Mount log folder
+      - ./mosquitto/mosquitto.conf:/mosquitto/mosquitto.conf:ro  # Mount the Mosquitto configuration file
+    command: mosquitto -c /mosquitto/mosquitto.conf  # Start Mosquitto with your config

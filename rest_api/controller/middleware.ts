@@ -4,7 +4,7 @@ import express from 'express';
 let lines: string[];
 
 try {
-    const data = fs.readFileSync('api_key.txt', 'utf8');
+    const data = process.env.API_KEY || "";
     lines = data.split('\r\n')
 } catch (err) {
     console.error('Error reading file:', err);

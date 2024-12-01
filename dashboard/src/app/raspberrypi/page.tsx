@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import React, { useEffect, useState, useRef } from "react";
@@ -247,7 +248,6 @@ export default function RaspberryPi() {
                         description={'ผลการทำนายจาก Raspberry Pi'}
                         chartData={mluData}
                         chartConfig={mluConfig}
-                        varname={'ตำแหน่ง'}
                         color={'#a768de'}
                     />
                     <div className='border-2 rounded-lg shadow-sm min-w-[40em]'>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -9,7 +10,6 @@ import {
   YAxis,
   Tooltip,
   Brush,
-  ReferenceArea,
 } from "recharts";
 import {
   Card,
@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 
 interface LineChartComponentProps {
   title: string;
@@ -29,7 +29,7 @@ interface LineChartComponentProps {
     classification: string;
     confidence: number; // Add confidence to data structure
   }>;
-  chartConfig: ChartConfig;
+  chartConfig: any;
   color: string;
 }
 
@@ -61,7 +61,7 @@ export const LineChartComponentForPi: React.FC<LineChartComponentProps> = ({
   const formattedData = chartData.map((item) => ({
     ...item,
     formattedTime: new Date(item.created_at).toLocaleString("th-TH"), // Format time in Thai locale
-    classificationValue: classificationToNumber[item.classification] || 0, // Map classification to a number
+    classificationValue: classificationToNumber[item.classification as keyof typeof classificationToNumber] || 0, // Map classification to a number
   }));
 
   // Handle Brush change to update zoomDomain
@@ -113,7 +113,7 @@ export const LineChartComponentForPi: React.FC<LineChartComponentProps> = ({
             <Tooltip
               formatter={(value: any, name: any, props: any) =>
                 name === "classificationValue"
-                  ? classificationMapping[props.payload.classification]
+                  ? classificationMapping[props.payload.classification as keyof typeof classificationMapping]
                   : value
               }
               labelFormatter={(label: string) => `Time: ${label}`}
