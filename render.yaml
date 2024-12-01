@@ -20,7 +20,7 @@ services:
     plan: free
 
   - name: mongodb
-    type: private
+    type: worker
     env: docker
     image: mongo:5.0
     startCommand: ""
@@ -33,7 +33,7 @@ services:
         type: bind
 
   - name: mqtt
-    type: private
+    type: worker
     env: docker
     image: eclipse-mosquitto:2.0
     startCommand: mosquitto -c /mosquitto/mosquitto.conf
