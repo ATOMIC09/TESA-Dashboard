@@ -13,6 +13,7 @@ services:
       - mqtt
     volumes:
       - ./rest_api/api_key.txt:/api_key.txt:ro
+    hostname: backend
 
   frontend:
     build:
@@ -21,6 +22,9 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    env_file:
+      - ./.env
+    hostname: frontend
 
   mongodb:
     image: mongo:5.0
@@ -31,6 +35,7 @@ services:
       - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     env_file:
       - ./.env
+    hostname: mongodb
 
   mqtt:
     image: eclipse-mosquitto:2.0
@@ -39,8 +44,20 @@ services:
       - "1883:1883"   # MQTT port
       - "9001:9001"   # WebSocket port
     volumes:
-      - ./mosquitto/passwd:/mosquitto/passwd:ro  # Mount the passwd file
-      - ./mosquitto/data:/mosquitto/data  # Mount data folder for persistence
-      - ./mosquitto/log:/mosquitto/log  # Mount log folder
-      - ./mosquitto/mosquitto.conf:/mosquitto/mosquitto.conf:ro  # Mount the Mosquitto configuration file
-    command: mosquitto -c /mosquitto/mosquitto.conf  # Start Mosquitto with your config
+      - ./mosquitto/passwd:/mosquitto/passwd:ro
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+      - ./mosquitto/mosquitto.conf:/mosquitto/mosquitto.conf:ro
+    command: mosquitto -c /mosquitto/mosquitto.conf
+    hostname: mqtt
+
+  simulation-test:
+    build:
+      context: ./simulation-test
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    hostname: simulation-test
