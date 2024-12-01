@@ -59,7 +59,7 @@ export default function Home() {
     let ws: WebSocket | null = null;
 
     if (connectWebSocket) {
-      ws = new WebSocket('ws://technest.ddns.net:8001/ws');
+      ws = new WebSocket('ws://localhost:8001/ws');
 
       ws.onopen = () => {
         console.log('WebSocket connected.');
@@ -267,8 +267,9 @@ export default function Home() {
             <input
               type="text"
               className="border rounded px-4 py-4 w-96 text-lg"
-              placeholder="โปรดใส่ API Key"
+              placeholder="ไม่จำเป็นต้องใส่ API Key"
               value={apiKey}
+              disabled={true}
               onChange={(e) => setApiKey(e.target.value)}
             />
             <div>
