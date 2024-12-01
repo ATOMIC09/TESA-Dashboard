@@ -5,13 +5,9 @@ services:
     dockerfilePath: ./rest_api/Dockerfile
     buildCommand: ""
     startCommand: ""
-    ports:
-      - 8080
     envVars:
       - file: ./.env
-    dependsOn:
-      - mongodb
-      - mqtt
+    plan: free
 
   - name: frontend
     type: web
@@ -19,43 +15,44 @@ services:
     dockerfilePath: ./dashboard/Dockerfile
     buildCommand: ""
     startCommand: ""
-    ports:
-      - 3000
     envVars:
       - file: ./.env
-    dependsOn:
-      - backend
+    plan: free
 
   - name: mongodb
-    type: worker
+    type: private
     env: docker
     image: mongo:5.0
     startCommand: ""
-    ports:
-      - 27017
-    volumes:
-      - path: ./mongodb/mongo-init.js
-        mountPath: /docker-entrypoint-initdb.d/mongo-init.js
     envVars:
       - file: ./.env
+    plan: free
+    volumes:
+      - mountPath: /docker-entrypoint-initdb.d
+        source: ./mongodb/mongo-init.js
+        type: bind
 
   - name: mqtt
-    type: worker
+    type: private
     env: docker
     image: eclipse-mosquitto:2.0
     startCommand: mosquitto -c /mosquitto/mosquitto.conf
-    ports:
-      - 1883
-      - 9001
+    envVars:
+      - file: ./.env
+    plan: free
     volumes:
-      - path: ./mosquitto/passwd
-        mountPath: /mosquitto/passwd
-      - path: ./mosquitto/data
-        mountPath: /mosquitto/data
-      - path: ./mosquitto/log
-        mountPath: /mosquitto/log
-      - path: ./mosquitto/mosquitto.conf
-        mountPath: /mosquitto/mosquitto.conf
+      - mountPath: /mosquitto/passwd
+        source: ./mosquitto/passwd
+        type: bind
+      - mountPath: /mosquitto/data
+        source: ./mosquitto/data
+        type: bind
+      - mountPath: /mosquitto/log
+        source: ./mosquitto/log
+        type: bind
+      - mountPath: /mosquitto/mosquitto.conf
+        source: ./mosquitto/mosquitto.conf
+        type: bind
 
   - name: simulation-test
     type: web
@@ -63,9 +60,6 @@ services:
     dockerfilePath: ./simulation-test/Dockerfile
     buildCommand: ""
     startCommand: ""
-    ports:
-      - 8001
     envVars:
       - file: ./.env
-    dependsOn:
-      - backend
+    plan: free
