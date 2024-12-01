@@ -11,8 +11,6 @@ services:
     depends_on:
       - mongodb
       - mqtt
-    volumes:
-      - ./rest_api/api_key.txt:/api_key.txt:ro
     hostname: backend
 
   frontend:
@@ -41,8 +39,8 @@ services:
     image: eclipse-mosquitto:2.0
     container_name: mqtt
     ports:
-      - "1883:1883"   # MQTT port
-      - "9001:9001"   # WebSocket port
+      - "1883:1883"
+      - "9001:9001"
     volumes:
       - ./mosquitto/passwd:/mosquitto/passwd:ro
       - ./mosquitto/data:/mosquitto/data

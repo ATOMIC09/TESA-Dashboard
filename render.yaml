@@ -1,0 +1,71 @@
+services:
+  - name: backend
+    type: web
+    env: docker
+    dockerfilePath: ./rest_api/Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    ports:
+      - 8080
+    envVars:
+      - file: ./.env
+    dependsOn:
+      - mongodb
+      - mqtt
+
+  - name: frontend
+    type: web
+    env: docker
+    dockerfilePath: ./dashboard/Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    ports:
+      - 3000
+    envVars:
+      - file: ./.env
+    dependsOn:
+      - backend
+
+  - name: mongodb
+    type: privateService
+    env: docker
+    image: mongo:5.0
+    startCommand: ""
+    ports:
+      - 27017
+    volumes:
+      - path: ./mongodb/mongo-init.js
+        mountPath: /docker-entrypoint-initdb.d/mongo-init.js
+    envVars:
+      - file: ./.env
+
+  - name: mqtt
+    type: privateService
+    env: docker
+    image: eclipse-mosquitto:2.0
+    startCommand: mosquitto -c /mosquitto/mosquitto.conf
+    ports:
+      - 1883
+      - 9001
+    volumes:
+      - path: ./mosquitto/passwd
+        mountPath: /mosquitto/passwd
+      - path: ./mosquitto/data
+        mountPath: /mosquitto/data
+      - path: ./mosquitto/log
+        mountPath: /mosquitto/log
+      - path: ./mosquitto/mosquitto.conf
+        mountPath: /mosquitto/mosquitto.conf
+
+  - name: simulation-test
+    type: web
+    env: docker
+    dockerfilePath: ./simulation-test/Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    ports:
+      - 8001
+    envVars:
+      - file: ./.env
+    dependsOn:
+      - backend
