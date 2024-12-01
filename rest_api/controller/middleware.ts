@@ -5,7 +5,7 @@ let lines: string[];
 
 try {
     const data = process.env.API_KEY || "";
-    lines = data.split('\r\n')
+    lines = data.split('\n')
 } catch (err) {
     console.error('Error reading file:', err);
 }

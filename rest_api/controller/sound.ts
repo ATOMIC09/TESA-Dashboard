@@ -86,7 +86,7 @@ router.post('/ticker',upload.single("file"),async (req : express.Request, res:ex
     const col = database.collection('sound')
     try {
         const data = await col.insertOne(sounddata)
-        client.publish("sound/ticker",process.env.BACKEND_URL+newPath.slice(1))
+        client.publish("sound/ticker",process.env.NEXT_PUBLIC_BACKENDSERVER+newPath.slice(1))
         res.status(201).send({ message: "OK", ids: data })
     }
     catch (error) {

@@ -48,7 +48,7 @@ router.post("/", validateAPIKey, upload.single("file"), async (req: express.Requ
     try {
         const data = await col.insertOne(modeldata)
         res.status(201).send({ message: "OK", ids: data })
-        client.publish("model/ticker",process.env.BACKEND_URL+newPath.slice(1))
+        client.publish("model/ticker",process.env.NEXT_PUBLIC_BACKENDSERVER+newPath.slice(1))
      }
     catch (error) {
         console.log(`${error}`);
