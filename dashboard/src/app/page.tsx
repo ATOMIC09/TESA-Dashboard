@@ -59,7 +59,7 @@ export default function Home() {
     let ws: WebSocket | null = null;
 
     if (connectWebSocket) {
-      ws = new WebSocket('ws://localhost:8001/ws');
+      ws = new WebSocket('wss://openfruit-tesa-simulation-test.onrender.com/ws');
 
       ws.onopen = () => {
         console.log('WebSocket connected.');

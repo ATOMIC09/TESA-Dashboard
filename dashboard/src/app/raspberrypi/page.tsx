@@ -30,7 +30,7 @@ export default function RaspberryPi() {
     const client = mqtt.connect(NEXT_PUBLIC_MQTTWEBSOCKET || '', {
         username: NEXT_PUBLIC_MQTT_USERNAME,
         password: NEXT_PUBLIC_MQTT_PASSWORD,
-        protocol: 'ws',
+        protocol: 'wss',
     });
     const dataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
