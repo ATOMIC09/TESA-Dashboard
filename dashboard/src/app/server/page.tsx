@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import TableComponent from "@/components/TableComponent";
 import axios from 'axios';
-import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/server/config";
+// import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/server/config";
 
 export default function Server() {
     const [sounds, setSounds] = useState([]);
@@ -17,7 +17,7 @@ export default function Server() {
             return;
         }
         else {
-            axios.get(`${NEXT_PUBLIC_BACKENDSERVER}/sounds`, {
+            axios.get('https://openfruit-tesa-backend.onrender.com/sounds', {
                 headers: {
                     Authorization: `Bearer ${apiKey}`
                 }
@@ -58,7 +58,7 @@ export default function Server() {
         formData.append("deviceId", deviceId);
         formData.append("timeStamp", new Date().toISOString());
 
-        axios.post(`${NEXT_PUBLIC_BACKENDSERVER}/sound`, formData, {
+        axios.post('https://openfruit-tesa-backend.onrender.com/sound', formData, {
             headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${apiKey}`
@@ -67,7 +67,7 @@ export default function Server() {
         .then((response) => {
             alert("File uploaded successfully!");
             // Refresh table
-            axios.get(`${NEXT_PUBLIC_BACKENDSERVER}/sounds`, {
+            axios.get('https://openfruit-tesa-backend.onrender.com/sounds', {
                 headers: {
                     Authorization: `Bearer ${apiKey}`
                 }

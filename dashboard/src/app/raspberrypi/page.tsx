@@ -4,7 +4,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { LineChartComponentForPi } from "./line-chart-forpi";
 import TableComponentForPi from "./TableComponent-forpi";
-import { NEXT_PUBLIC_MQTTWEBSOCKET, NEXT_PUBLIC_MQTT_USERNAME, NEXT_PUBLIC_MQTT_PASSWORD } from "@/app/raspberrypi/config";
+import { NEXT_PUBLIC_MQTT_USERNAME, NEXT_PUBLIC_MQTT_PASSWORD } from "@/app/raspberrypi/config";
 import mqtt from "mqtt";
 
 export default function RaspberryPi() {
@@ -27,7 +27,7 @@ export default function RaspberryPi() {
         confidence: number;
     }
 
-    const client = mqtt.connect(NEXT_PUBLIC_MQTTWEBSOCKET || '', {
+    const client = mqtt.connect('wss://6dfbc63868d14af8a538980749d13caf.s1.eu.hivemq.cloud:8884/mqtt', {
         username: NEXT_PUBLIC_MQTT_USERNAME,
         password: NEXT_PUBLIC_MQTT_PASSWORD,
         protocol: 'wss',
