@@ -1,7 +1,7 @@
 import mqtt from "mqtt"
 
-const user = process.env.user
-const password = process.env.password
+const user = process.env.NEXT_PUBLIC_MQTT_USERNAME
+const password = process.env.NEXT_PUBLIC_MQTT_PASSWORD
 
 const brokerurl = process.env.mqtturl as string
 
