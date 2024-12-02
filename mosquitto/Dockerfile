@@ -1,24 +1,26 @@
+# syntax = docker/dockerfile:1.2
+
 # Use the official Eclipse Mosquitto base image
 FROM eclipse-mosquitto:2.0
 
-# Set up configuration directory and create necessary directories
+# Set up configuration directory and copy files into the image
 WORKDIR /mosquitto
 
-# Copy configuration files into the image
+RUN --mount=type=secret,id=_env,dst=/etc/secrets/passwd cat /etc/secrets/passwd
+
+# Copy configuration files
 COPY ./data /mosquitto/data
 COPY ./log /mosquitto/log
 COPY ./mosquitto.conf /mosquitto/mosquitto.conf
-
-# Copy the entrypoint script to handle the secret
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY /etc/secrets/passwd /mosquitto/passwd
 
 # Ensure proper permissions (optional, depending on your setup)
-RUN chmod 0644 /mosquitto/mosquitto.conf \
+RUN chmod 0600 /mosquitto/passwd \
+    && chmod 0644 /mosquitto/mosquitto.conf \
     && chown -R mosquitto:mosquitto /mosquitto
 
 # Expose default Mosquitto ports
 EXPOSE 1883 9001
 
-# Use the entrypoint script to manage secrets and start Mosquitto
-ENTRYPOINT ["/entrypoint.sh"]
+# Run the Mosquitto broker with the custom configuration
+CMD ["mosquitto", "-c", "/mosquitto/mosquitto.conf"]
