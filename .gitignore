@@ -1,5 +1,6 @@
 .vscode
 .env
+.env.production
 passwd
 /mosquitto/data
 /mosquitto/log
