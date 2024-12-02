@@ -40,6 +40,7 @@ export default function RaspberryPi() {
             console.log('Connecting to MQTT broker...');
             console.log('Username:', process.env.NEXT_PUBLIC_MQTT_USERNAME);
             console.log('Password:', process.env.NEXT_PUBLIC_MQTT_PASSWORD);
+            console.log('Password:', process.env.NODE_ENV_TEST);
             setIsConnecting(true);
             client.on('connect', () => {
                 setIsConnected(true);
