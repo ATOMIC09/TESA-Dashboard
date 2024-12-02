@@ -66,6 +66,8 @@ export default function RaspberryPi() {
                         clearTimeout(dataTimeoutRef.current);
                     }
 
+                    console.log('Received data:', data);
+
                     setMluData((prevData) => {
                         const updatedData = [
                             ...prevData,
@@ -104,6 +106,7 @@ export default function RaspberryPi() {
         } else {
             client.end();
             setIsConnected(false);
+            console.log('Disconnected from MQTT broker');
         }
     }, [connectWebSocket]);
 
@@ -143,14 +146,16 @@ export default function RaspberryPi() {
     };
 
     const publishMessage = (command: string) => {
-        client.publish('rpi/10000000bab0b141/command',
-            JSON.stringify({ command }),
-            (err) => {
-                if (err) {
-                    console.log(err);
-                }
-                console.log(`Published ${command} command`);
-            });
+        if (isConnected) {
+            client.publish('rpi/10000000bab0b141/command',
+                JSON.stringify({ command }),
+                (err) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(`Published ${command} command`);
+                });
+        }
     };
 
     useEffect(() => {
@@ -236,7 +241,7 @@ export default function RaspberryPi() {
                     <button
                         className={`${isRecording ? 'bg-red-900 hover:bg-red-950' : 'bg-red-500 hover:bg-red-600'} text-white rounded-md p-2`}
                         onClick={handleStartRecording}
-                        disabled={!isOnline}
+                        disabled={!isOnline || !isConnected}
                     >
                         {isRecording ? 'Stop Recording' : 'Start Recording'}
                     </button>}
