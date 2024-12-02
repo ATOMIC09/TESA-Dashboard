@@ -4,6 +4,9 @@ FROM mongo:5.0
 # Copy the initialization script into the MongoDB container
 COPY ./mongo-init.js /docker-entrypoint-initdb.d/mongo-init.js
 
+# Add a custom startup command to disable SSL/TLS
+ENTRYPOINT ["mongod", "--tlsMode", "disabled"]
+
 # Expose the MongoDB default port
 EXPOSE 27017
 
