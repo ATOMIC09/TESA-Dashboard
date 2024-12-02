@@ -6,7 +6,7 @@ require('dotenv').config();
 const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTTWEBSOCKET, {
   username: process.env.NEXT_PUBLIC_MQTT_USERNAME,
   password: process.env.NEXT_PUBLIC_MQTT_PASSWORD,
-  protocol: 'ws',
+  protocol: 'wss',
 });
 
 // Function to generate random simulation data for WebSocket
