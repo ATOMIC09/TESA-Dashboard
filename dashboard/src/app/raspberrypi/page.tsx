@@ -16,8 +16,15 @@ export default function RaspberryPi() {
     const [isAutoMode, setIsAutoMode] = useState(false);
     const [logStatus, setLogStatus] = useState<string[]>([]);
     const [isConnected, setIsConnected] = useState(false);
+    const [isConnecting, setIsConnecting] = useState(false);
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const client = mqtt.connect('wss://6dfbc63868d14af8a538980749d13caf.s1.eu.hivemq.cloud:8884/mqtt', {
+        username: NEXT_PUBLIC_MQTT_USERNAME,
+        password: NEXT_PUBLIC_MQTT_PASSWORD,
+        protocol: 'wss',
+    });
+    const dataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     interface mluDatai {
         id: number;
@@ -27,88 +34,106 @@ export default function RaspberryPi() {
         confidence: number;
     }
 
-    const client = mqtt.connect('wss://6dfbc63868d14af8a538980749d13caf.s1.eu.hivemq.cloud:8884/mqtt', {
-        username: NEXT_PUBLIC_MQTT_USERNAME,
-        password: NEXT_PUBLIC_MQTT_PASSWORD,
-        protocol: 'wss',
-    });
-    const dataTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         if (connectWebSocket) {
+            console.log('Connecting to MQTT broker...');
+            setIsConnecting(true);
             client.on('connect', () => {
                 setIsConnected(true);
+                setIsConnecting(false);
                 console.log('Connected to MQTT broker');
-                client.subscribe('rpi/mlu/data', (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    console.log('Subscribed to rpi/mlu/data');
+                
+                // Subscribe to topics
+                const topics = ['rpi/mlu/data', 'rpi/10000000bab0b141/status'];
+                topics.forEach((topic) => {
+                    client.subscribe(topic, (err) => {
+                        if (err) {
+                            console.error(`Subscription error on ${topic}:`, err);
+                        } else {
+                            console.log(`Subscribed to ${topic}`);
+                        }
+                    });
                 });
-
-                client.subscribe('rpi/10000000bab0b141/status', (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                    console.log('Subscribed to rpi/10000000bab0b141/status');
-                });
-
-                // Stop recording
+    
+                // Stop recording message
                 publishMessage('stopRecord');
             });
-
+    
+            client.on('error', (err) => {
+                console.error('Connection error: ', err);
+                client.end();
+            });
+    
             client.on('message', (topic, message) => {
-                const data = JSON.parse(message.toString());
-
-                if (topic === 'rpi/mlu/data') {
-                    setIsOnline(true);
-                    if (dataTimeoutRef.current) {
-                        clearTimeout(dataTimeoutRef.current);
+                try {
+                    const data = JSON.parse(message.toString());
+    
+                    if (topic === 'rpi/mlu/data') {
+                        setIsOnline(true);
+                        // Clear previous timeout and set a new one
+                        if (dataTimeoutRef.current) {
+                            clearTimeout(dataTimeoutRef.current);
+                        }
+    
+                        console.log('Received data:', data);
+    
+                        setMluData((prevData) => {
+                            const updatedData = [
+                                ...prevData,
+                                {
+                                    id: data.id,
+                                    timestamp: data.timestamp,
+                                    created_at: data.created_at,
+                                    classification: data.classification,
+                                    confidence: data.confidence,
+                                },
+                            ];
+                            return updatedData.slice(-30); // Keep the last 30 items
+                        });
+    
+                        // Set timeout to mark as offline after 30 seconds of inactivity
+                        dataTimeoutRef.current = setTimeout(() => {
+                            setIsOnline(false);
+                            console.log('Raspberry Pi is offline due to no data update');
+                        }, 30 * 1000);
                     }
-
-                    console.log('Received data:', data);
-
-                    setMluData((prevData) => {
-                        const updatedData = [
-                            ...prevData,
-                            {
-                                id: data.id,
-                                timestamp: data.timestamp,
-                                created_at: data.created_at,
-                                classification: data.classification,
-                                confidence: data.confidence,
-                            },
-                        ];
-                        return updatedData.slice(-30);
-                    });
-
-                    dataTimeoutRef.current = setTimeout(() => {
-                        setIsOnline(false);
-                        console.log('Raspberry Pi is offline due to no data update');
-                    }, 30 * 1000);
-                }
-
-                if (topic === 'rpi/10000000bab0b141/status') {
-                    setLogStatus((prev) => [
-                        ...prev,
-                        `State: ${data.report_state}, File: ${data.filename || 'N/A'}, Time: ${data.timestamp}`,
-                    ]);
+    
+                    if (topic === 'rpi/10000000bab0b141/status') {
+                        setLogStatus((prev) => [
+                            ...prev,
+                            `State: ${data.report_state}, File: ${data.filename || 'N/A'}, Time: ${data.timestamp}`,
+                        ]);
+                    }
+                } catch (error) {
+                    console.error('Error parsing message data:', error);
                 }
             });
-
+    
             return () => {
+                // Unsubscribe from topics
+                client.unsubscribe(['rpi/mlu/data', 'rpi/10000000bab0b141/status'], (err) => {
+                    if (err) {
+                        console.error('Unsubscribe error:', err);
+                    } else {
+                        console.log('Unsubscribed from topics');
+                    }
+                });
+
                 if (dataTimeoutRef.current) {
                     clearTimeout(dataTimeoutRef.current);
                 }
+                
                 client.end();
                 setIsConnected(false);
+                setIsConnecting(false);
+                setIsOnline(false);
+                console.log('Disconnected from MQTT broker');
+                
             };
-        } else {
-            client.end();
-            setIsConnected(false);
-            console.log('Disconnected from MQTT broker');
         }
     }, [connectWebSocket]);
+    
 
     const mluConfig = {
         scales: {
@@ -196,6 +221,7 @@ export default function RaspberryPi() {
                     <button
                         className={`${connectWebSocket ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-md p-2`}
                         onClick={() => setConnectWebSocket(!connectWebSocket)}
+                        disabled={isConnecting}
                     >
                         {connectWebSocket ? 'Disconnect' : 'Connect'}
                     </button>
