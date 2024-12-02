@@ -6,7 +6,7 @@ FROM eclipse-mosquitto:2.0
 # Set up configuration directory and copy files into the image
 WORKDIR /mosquitto
 
-RUN --mount=type=secret,id=_passwd,dst=/etc/secrets/passwd cp /etc/secrets/passwd
+RUN --mount=type=secret,id=_passwd,dst=/etc/secrets/passwd cp /etc/secrets/passwd /mosquitto/passwd
 
 # Copy configuration files
 COPY ./data /mosquitto/data
