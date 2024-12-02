@@ -1,6 +1,27 @@
 const mqtt = require('mqtt');
 const WebSocket = require('ws'); // Import WebSocket library
 require('dotenv').config();
+const https = require('https');
+
+// List of URLs to keep awake
+const urls = [
+  "https://openfruit-tesa.onrender.com",
+  "https://openfruit-tesa-backend.onrender.com",
+  "https://openfruit-tesa-simulation-test.onrender.com"
+];
+
+// Ping each URL periodically with a delay
+setInterval(() => {
+  urls.forEach((url, index) => {
+    setTimeout(() => {
+      https.get(url, (res) => {
+        console.log(`Pinged ${url} to keep awake`);
+      }).on('error', (err) => {
+        console.error(`Ping error for ${url}:`, err);
+      });
+    }, index * 1000); // 1-second delay between pings
+  });
+}, 600000); // Repeat every 10 minutes
 
 // Connect to the MQTT broker (change to your broker URL)
 const client = mqtt.connect(process.env.NEXT_PUBLIC_MQTTWEBSOCKET, {

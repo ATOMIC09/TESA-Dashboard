@@ -1,5 +1,5 @@
 import express from 'express'
-import bodyParser from 'body-parser'
+// import bodyParser from 'body-parser'
 import * as fs from 'fs';
 import cors from 'cors'
 import 'dotenv/config'
