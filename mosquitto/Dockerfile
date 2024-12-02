@@ -5,7 +5,7 @@ FROM eclipse-mosquitto:2.0
 WORKDIR /mosquitto
 
 # Create /data and /log directories before copying files
-RUN mkdir -p /mosquitto/data /mosquitto/log
+RUN mkdir -p ./data ./log
 
 # Copy configuration files into the image
 COPY ./data /mosquitto/data
