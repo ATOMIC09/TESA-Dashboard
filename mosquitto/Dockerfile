@@ -12,7 +12,6 @@ RUN --mount=type=secret,id=_env,dst=/etc/secrets/passwd cat /etc/secrets/passwd
 COPY ./data /mosquitto/data
 COPY ./log /mosquitto/log
 COPY ./mosquitto.conf /mosquitto/mosquitto.conf
-COPY /etc/secrets/passwd /mosquitto/passwd
 
 # Ensure proper permissions (optional, depending on your setup)
 RUN chmod 0600 /mosquitto/passwd \
