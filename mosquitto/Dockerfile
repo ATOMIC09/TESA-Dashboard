@@ -10,7 +10,7 @@ COPY ./log /mosquitto/log
 COPY ./mosquitto.conf /mosquitto/mosquitto.conf
 
 # Copy the entrypoint script to handle the secret
-COPY entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Ensure proper permissions (optional, depending on your setup)
