@@ -25,6 +25,8 @@ export const validateAPIKey = (req: express.Request, res: express.Response, next
     }
     try {
 
+        console.log("lines",lines);
+
         if (lines.includes(token)) {
             // logger.info(`Access API Key`);
             console.log("pass");

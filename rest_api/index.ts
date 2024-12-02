@@ -12,7 +12,7 @@ import database from './config/db';
 
 
 const app = express()
-const port = process.env.port
+const port = process.env.PORT
 const folderpath = ["./static/sound","./static/model"]
 const topics = ["model/ticker","sound/ticker","report/"]
 

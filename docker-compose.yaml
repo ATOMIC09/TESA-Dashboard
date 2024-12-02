@@ -25,29 +25,25 @@ services:
     hostname: frontend
 
   mongodb:
-    image: mongo:5.0
+    build:
+      context: ./mongodb
     container_name: mongodb
     ports:
       - "27017:27017"
-    volumes:
-      - ./mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     env_file:
       - ./.env
     hostname: mongodb
 
+
   mqtt:
-    image: eclipse-mosquitto:2.0
+    build:
+      context: ./mosquitto
     container_name: mqtt
     ports:
       - "1883:1883"
       - "9001:9001"
-    volumes:
-      - ./mosquitto/passwd:/mosquitto/passwd:ro
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
-      - ./mosquitto/mosquitto.conf:/mosquitto/mosquitto.conf:ro
-    command: mosquitto -c /mosquitto/mosquitto.conf
     hostname: mqtt
+
 
   simulation-test:
     build:
