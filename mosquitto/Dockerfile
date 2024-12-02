@@ -5,7 +5,7 @@ FROM eclipse-mosquitto:2.0
 WORKDIR /mosquitto
 
 # Copy configuration files
-COPY ./passwd /mosquitto/passwd
+COPY /etc/secrets/passwd /mosquitto/passwd
 COPY ./data /mosquitto/data
 COPY ./log /mosquitto/log
 COPY ./mosquitto.conf /mosquitto/mosquitto.conf
