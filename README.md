@@ -42,18 +42,6 @@ This page connects to a Raspberry Pi using MQTT over WebSocket and provides the 
 - Prediction Logs:
   - A table lists detailed prediction results for easy review.
 
-# How It Works
-## 1. MachineAPI:
-- Streams real-time data via WebSocket for monitoring machine metrics.
-
-## 2. Server:
-- Handles file uploads and database management for reports, ML models, and audio files.
-- Stores metadata and paths in MongoDB for efficient retrieval.
-
-## 3. Raspberry Pi Controller:
-- Connects to the Raspberry Pi using MQTT over WebSocket.
-- Publishes and subscribes to topics for sending commands and receiving predictions.
-
 # Technologies Used
 - Frontend: Next.js 14, TypeScript, WebSocket for real-time communication.
 - Backend: Bun, MongoDB for data storage, and MQTT for Raspberry Pi integration.
