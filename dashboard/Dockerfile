@@ -1,12 +1,11 @@
+# syntax = docker/dockerfile:1.2
+
 # Use Node.js for building and serving Next.js
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-ENV NEXT_PUBLIC_BACKENDSERVER=$NEXT_PUBLIC_BACKENDSERVER
-ENV NEXT_PUBLIC_MQTT_PASSWORD=$NEXT_PUBLIC_MQTT_PASSWORD
-ENV NEXT_PUBLIC_MQTT_USERNAME=$NEXT_PUBLIC_MQTT_USERNAME
-ENV NEXT_PUBLIC_MQTTWEBSOCKET=$NEXT_PUBLIC_MQTTWEBSOCKET
+RUN --mount=type=secret,id=_env,dst=./.env
 
 # Copy code and install dependencies
 COPY package.json package-lock.json ./
