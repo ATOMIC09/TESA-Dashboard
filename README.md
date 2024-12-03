@@ -1,10 +1,10 @@
-# OpenFruit — TESA Top Gun Rally 18 Integration Demo
+<h1 align="center">OpenFruit — TESA Top Gun Rally 18 Integration Demo</h1>
 
-## Overview
+# Overview
 This project is a web-based demo for monitoring and controlling machines, providing real-time data visualization and Machine Learning (ML) predictions. It includes a home page for machine information and a Raspberry Pi controller page for ML-based predictions.
 
-## Features
-### 1. Home Page
+# Features
+## 1. Home Page
 Displays machine information by connecting to MachineAPI via WebSocket. The real-time data includes:
 
 - Energy Consumption:
@@ -19,7 +19,7 @@ Displays machine information by connecting to MachineAPI via WebSocket. The real
 - Position of the Punch:
   - A triangular wave indicating the punch position.
 
-### 2. Server Controller
+## 2. Server Controller
 The server manages file storage and interactions with MongoDB, which stores file paths for various Raspberry Pi-related data. It supports the following functionalities:
 
 - Reports:
@@ -29,7 +29,7 @@ The server manages file storage and interactions with MongoDB, which stores file
 - Recorded Sounds:
   - Stores audio files recorded from the Raspberry Pi, controlled via the /raspberrypi page.
 
-### 3. Raspberry Pi Controller
+## 3. Raspberry Pi Controller
 This page connects to a Raspberry Pi using MQTT over WebSocket and provides the following:
 
 - Machine Learning Predictions:
@@ -42,30 +42,34 @@ This page connects to a Raspberry Pi using MQTT over WebSocket and provides the 
 - Prediction Logs:
   - A table lists detailed prediction results for easy review.
 
-## How It Works
-### 1. MachineAPI:
-
+# How It Works
+## 1. MachineAPI:
 - Streams real-time data via WebSocket for monitoring machine metrics.
 
-### 2. Server:
-
+## 2. Server:
 - Handles file uploads and database management for reports, ML models, and audio files.
 - Stores metadata and paths in MongoDB for efficient retrieval.
 
-### 3. Raspberry Pi Controller:
-
+## 3. Raspberry Pi Controller:
 - Connects to the Raspberry Pi using MQTT over WebSocket.
 - Publishes and subscribes to topics for sending commands and receiving predictions.
 
-## Technologies Used
+# Technologies Used
 - Frontend: Next.js 14, TypeScript, WebSocket for real-time communication.
 - Backend: Bun, MongoDB for data storage, and MQTT for Raspberry Pi integration.
 - Visualization: Charts.js for displaying line charts of predictions.
 - Raspberry Pi Integration: MQTT over WebSocket for ML predictions and audio recordings.
 
-## Contributor
+# Contributor
 - <a href="https://github.com/ATOMIC09">ATOMIC09</a>
 - <a href="https://github.com/Bipoeman">Bipoeman</a>
 - <a href="https://github.com/buratud">buratud</a>
 - <a href="https://github.com/I2eNamE">I2eNamE</a>
 - <a href="https://github.com/SkyJTx">SkyJTx</a>
+
+# Demo Gallery
+![5d58e21e-4a63-4b62-90f3-7d3f76e03c64](https://github.com/user-attachments/assets/419752bf-e2fa-4966-a5b1-e50b760d6334)
+![ade33b63-ab5e-4391-a078-0bf2629674ae](https://github.com/user-attachments/assets/73b2e973-c21e-41f1-ac69-aa54df2c6bbe)
+![228ec3fe-1856-4a53-bb6f-1e197c503ca6](https://github.com/user-attachments/assets/d3ce1427-3db4-4fca-9f84-766ce13b9be8)
+
+
