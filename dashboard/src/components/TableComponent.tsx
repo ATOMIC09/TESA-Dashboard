@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/server/config";
+// import { NEXT_PUBLIC_BACKENDSERVER } from "@/app/server/config";
 
 // Define the type for tabledata data
 interface TableData {
@@ -54,7 +54,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ tabledatas }) => {
             <TableCell>{formatTimestamp(tabledata.timeStamp)}</TableCell>
             <TableCell>{tabledata.filePath.split('/').pop()?.replace(/_[a-f0-9\-]+\.wav$/, '.wav')}</TableCell>
             <TableCell>
-              <a target="_blank" rel="noopener noreferrer" href={`${NEXT_PUBLIC_BACKENDSERVER}${tabledata.filePath.split('/static/sound/,')}`}>
+              <a target="_blank" rel="noopener noreferrer" href={`https://openfruit-tesa-backend.onrender.com${tabledata.filePath.split('/static/sound/,')}`}>
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                   Download
                 </button>
