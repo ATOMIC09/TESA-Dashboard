@@ -38,11 +38,6 @@ export default function RaspberryPi() {
     useEffect(() => {
         if (connectWebSocket) {
             console.log('Connecting to MQTT broker...');
-            console.log('Username:', process.env.NEXT_PUBLIC_MQTT_USERNAME);
-            console.log('Password:', process.env.NEXT_PUBLIC_MQTT_PASSWORD);
-            console.log('Password:', process.env.NODE_ENV_TEST);
-            console.log('Password:', process.env.REACT_APP_TEST);
-            console.log('Password:', process.env.TEST);
             setIsConnecting(true);
             client.on('connect', () => {
                 setIsConnected(true);
